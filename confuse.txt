@@ -1,0 +1,2 @@
+$ echo "azhe  apple  pear"|sed 's/\(^[[:alpha:]]*\) \([[:alpha:]]*\) \([[:alpha:]]*$\)/\3/'
+azhe  apple  pear
