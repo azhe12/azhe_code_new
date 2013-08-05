@@ -6,17 +6,18 @@
 #android build cache
 export USE_CCACHE=1
 export CCACHE_DIR=/home/azhe/work/android/z4_latest_shep/.ccache
-#
+#vi mode
 set -o vi
-
+EDITOR=vi
 #jdk1.6
 export JAVA_HOME=/home/azhe/other/software/jdk1.6.0_23
 export CLASSPATH=$JAVA_HOME/lib:$JAVA_HOME/jre/lib
 #android SDK
 ANDROID_SDK=/home/azhe/Downloads/adt-bundle-linux-x86_64-20130219/sdk
 #PATH
+CROSSTOOL=/home/azhe/work/android/z4_latest_shep/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/
 #export PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools
-PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools:/home/azhe/bin
+PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools:/home/azhe/bin:$CROSSTOOL
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
@@ -55,7 +56,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -69,7 +70,8 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+#    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -126,7 +128,7 @@ fi
 #back dir
 ..()
 {
-	n=$1
+	n=${1:-1}
 	DSTDIR=""
 	while [ $n -gt 0 ] 
 	do

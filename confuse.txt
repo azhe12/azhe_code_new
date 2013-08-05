@@ -1,2 +1,6 @@
-$ echo "azhe  apple  pear"|sed 's/\(^[[:alpha:]]*\) \([[:alpha:]]*\) \([[:alpha:]]*$\)/\3/'
+1. $ echo "azhe  apple  pear"|sed 's/\(^[[:alpha:]]*\) \([[:alpha:]]*\) \([[:alpha:]]*$\)/\3/'
 azhe  apple  pear
+
+2. IFS='
+	 '
+	 '\040\t\n'
