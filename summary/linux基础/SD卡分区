@@ -1,0 +1,328 @@
+刚买了一个4G的TF卡，居然在我的智能山寨机coolo818上不能使用，因为coolo818最大支持2G的卡。于是，就想把高容量的SD卡格成两个2G的盘片来用。
+
+在 Fedora 8下，将一张4G的TF卡(MicroSD),格成两个2G的分区，一个主分区，一个逻辑分区。
+
+ps：SD卡有TF卡（现在通称MicroSD），SD卡，MiniSD卡,SDHC等多种，长的不一样；除此之外，还有一种MMC卡。
+指令：fdisk 
+用途：观察硬盘之实体使用情形与分割硬盘用。 
+使用方法： 
+　　　　　　一、在 console 上输入 fdisk -l /dev/sdb ，观察硬盘之实体使用情形。 
+　　　　　　二、在 console 上输入 fdisk /dev/sdb，可进入分割硬盘模式。 
+　　　　　　　　1. 输入 m 显示所有命令列示。 
+　　　　　　　　2. 输入 p 显示硬盘分割情形。 
+　　　　　　　　3. 输入 a 设定硬盘启动区。 
+　　　　　　　　4. 输入 n 设定新的硬盘分割区。   
+　　　　    　　　4.1. 输入 e 硬盘为[延伸]分割区(extend)。 
+　　　　　　　　　4.2. 输入 p 硬盘为[主要]分割区(primary)。 
+　　　　　　　　5. 输入 t 改变硬盘分割区属性。 
+　　　　　　　　6. 输入 d 删除硬盘分割区属性。 
+　　　　　　　　7. 输入 q 结束不存入硬盘分割区属性。 
+　　　　　　　　8. 输入 w 结束并写入硬盘分割区属性。
+
+[root@localhost ~]# fdisk /dev/sdb      #插入读卡器，在我电脑上显示是sdb,以下黑字为键入部分
+
+The number of cylinders for this disk is set to 189513.
+There is nothing wrong with that, but this is larger than 1024,
+and could in certain setups cause problems with:
+1) software that runs at boot time (e.g., old versions of LILO)
+2) booting and partitioning software from other OSs
+   (e.g., DOS FDISK, OS/2 FDISK)
+
+Command (m for help): m       #help
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+Command (m for help): p                  #查看
+Disk /dev/sdb: 4075 MB, 4075290624 bytes
+7 heads, 6 sectors/track, 189513 cylinders
+Units = cylinders of 42 * 512 = 21504 bytes
+Disk identifier: 0x00000000
+
+   Device Boot      Start         End      Blocks   Id System
+/dev/sdb1               1       93007     1953144    c W95 FAT32 (LBA)
+/dev/sdb2           93008      189513     2026626    f W95 Ext'd (LBA)
+/dev/sdb5           93008      189513     2026623    c W95 FAT32 (LBA)
+Command (m for help): d 
+Partition number (1-5): 1 #删除1分区，因为之前我已经分成两个区了，所以现在演示时显示有两个分区，总之，先删掉
+
+Command (m for help): d
+Partition number (1-5): 2 #删除2分区
+
+Command (m for help): d
+No partition is defined yet!
+
+Command (m for help): p
+
+Disk /dev/sdb: 4075 MB, 4075290624 bytes
+7 heads, 6 sectors/track, 189513 cylinders
+Units = cylinders of 42 * 512 = 21504 bytes
+Disk identifier: 0x00000000
+
+#以上为删除原有的分区
+
+Device Boot      Start         End      Blocks   Id System
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 1
+First cylinder (1-189513, default 1): 
+Using default value 1
+Last cylinder or +size or +sizeM or +sizeK (1-189513, default 189513): +2048M
+
+Command (m for help): t
+Selected partition 1
+Hex code (type L to list codes): L
+
+0 Empty           1e Hidden W95 FAT1 80 Old Minix       be Solaris boot   
+1 FAT12           24 NEC DOS         81 Minix / old Lin bf Solaris        
+2 XENIX root      39 Plan 9          82 Linux swap / So c1 DRDOS/sec (FAT-
+3 XENIX usr       3c PartitionMagic 83 Linux           c4 DRDOS/sec (FAT-
+4 FAT16 <32M      40 Venix 80286     84 OS/2 hidden C: c6 DRDOS/sec (FAT-
+5 Extended        41 PPC PReP Boot   85 Linux extended c7 Syrinx         
+6 FAT16           42 SFS             86 NTFS volume set da Non-FS data    
+7 HPFS/NTFS       4d QNX4.x          87 NTFS volume set db CP/M / CTOS / .
+8 AIX             4e QNX4.x 2nd part 88 Linux plaintext de Dell Utility   
+9 AIX bootable    4f QNX4.x 3rd part 8e Linux LVM       df BootIt         
+a OS/2 Boot Manag 50 OnTrack DM      93 Amoeba          e1 DOS access     
+b W95 FAT32       51 OnTrack DM6 Aux 94 Amoeba BBT      e3 DOS R/O        
+c W95 FAT32 (LBA) 52 CP/M            9f BSD/OS          e4 SpeedStor      
+e W95 FAT16 (LBA) 53 OnTrack DM6 Aux a0 IBM Thinkpad hi eb BeOS fs        
+f W95 Ext'd (LBA) 54 OnTrackDM6      a5 FreeBSD         ee EFI GPT        
+10 OPUS            55 EZ-Drive        a6 OpenBSD         ef EFI (FAT-12/16/
+11 Hidden FAT12    56 Golden Bow      a7 NeXTSTEP        f0 Linux/PA-RISC b
+12 Compaq diagnost 5c Priam Edisk     a8 Darwin UFS      f1 SpeedStor      
+14 Hidden FAT16 <3 61 SpeedStor       a9 NetBSD          f4 SpeedStor      
+16 Hidden FAT16    63 GNU HURD or Sys ab Darwin boot     f2 DOS secondary 
+17 Hidden HPFS/NTF 64 Novell Netware b7 BSDI fs         fd Linux raid auto
+18 AST SmartSleep 65 Novell Netware b8 BSDI swap       fe LANstep        
+1b Hidden W95 FAT3 70 DiskSecure Mult bb Boot Wizard hid ff BBT            
+1c Hidden W95 FAT3 75 PC/IX      
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 1
+First cylinder (1-189513, default 1): 
+Using default value 1
+Last cylinder or +size or +sizeM or +sizeK (1-189513, default 189513): +2048M
+
+Command (m for help): t
+Selected partition 1
+Hex code (type L to list codes): L
+
+0 Empty           1e Hidden W95 FAT1 80 Old Minix       be Solaris boot   
+1 FAT12           24 NEC DOS         81 Minix / old Lin bf Solaris        
+2 XENIX root      39 Plan 9          82 Linux swap / So c1 DRDOS/sec (FAT-
+3 XENIX usr       3c PartitionMagic 83 Linux           c4 DRDOS/sec (FAT-
+4 FAT16 <32M      40 Venix 80286     84 OS/2 hidden C: c6 DRDOS/sec (FAT-
+5 Extended        41 PPC PReP Boot   85 Linux extended c7 Syrinx         
+6 FAT16           42 SFS             86 NTFS volume set da Non-FS data    
+7 HPFS/NTFS       4d QNX4.x          87 NTFS volume set db CP/M / CTOS / .
+8 AIX             4e QNX4.x 2nd part 88 Linux plaintext de Dell Utility   
+9 AIX bootable    4f QNX4.x 3rd part 8e Linux LVM       df BootIt         
+a OS/2 Boot Manag 50 OnTrack DM      93 Amoeba          e1 DOS access     
+b W95 FAT32       51 OnTrack DM6 Aux 94 Amoeba BBT      e3 DOS R/O        
+c W95 FAT32 (LBA) 52 CP/M            9f BSD/OS          e4 SpeedStor      
+e W95 FAT16 (LBA) 53 OnTrack DM6 Aux a0 IBM Thinkpad hi eb BeOS fs        
+f W95 Ext'd (LBA) 54 OnTrackDM6"nbsp;     a5 FreeBSD         ee EFI GPT        
+10 OPUS            55 EZ-Drive        a6 OpenBSD         ef EFI (FAT-12/16/
+11 Hidden FAT12    56 Golden Bow      a7 NeXTSTEP        f0 Linux/PA-RISC b
+12 Compaq diagnost 5c Priam Edisk     a8 Darwin UFS      f1 SpeedStor      
+14 Hidden FAT16 <3 61 SpeedStor       a9 NetBSD          f4 SpeedStor      
+16 Hidden FAT16    63 GNU HURD or Sys ab Darwin boot     f2 DOS secondary 
+17 Hidden HPFS/NTF 64 Novell Netware b7 BSDI fs         fd Linux raid auto
+18 AST SmartSleep 65 Novell Netware b8 BSDI swap       fe LANstep        
+1b Hidden W95 FAT3 70 DiskSecure Mult bb Boot Wizard hid ff BBT            
+1c Hidden W95 FAT3 75 PC/IX   
+
+Hex code (type L to list codes): c
+Changed system type of partition 1 to c (W95 FAT32 (LBA))
+
+#以上为建2G的主分区，W95 FAT32 (LBA)类型
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+e
+Partition number (1-4): 2
+First cylinder (95240-189513, default 95240): 
+Using default value 95240
+Last cylinder or +size or +sizeM or +sizeK (95240-189513, default 189513): 
+Using default value 189513
+
+Command (m for help): t
+Partition number (1-5): 2
+Hex code (type L to list codes): f
+Changed system type of partition 2 to f (W95 Ext'd (LBA))
+
+#以上为创建扩展分区，类型为W95 Ext'd (LBA)
+
+Command (m for help): n
+Command action
+   l   logical (5 or over)
+   p   primary partition (1-4)
+l
+First cylinder (95240-189513, default 95240): 
+Using default value 95240
+Last cylinder or +size or +sizeM or +sizeK (95240-189513, default 189513): 
+Using default value 189513
+
+Command (m for help): t
+Partition number (1-5): 5
+Hex code (type L to list codes): c
+Changed system type of partition 5 to c (W95 FAT32 (LBA))
+
+#以上为创建逻辑驱动器在扩展分区上，类型为W95 FAT32 (LBA)
+
+Command (m for help): p
+
+Disk /dev/sdb: 4075 MB, 4075290624 bytes
+7 heads, 6 sectors/track, 189513 cylinders
+Units = cylinders of 42 * 512 = 21504 bytes
+Disk identifier: 0x00000000
+
+   Device Boot      Start         End      Blocks   Id System
+/dev/sdb1               1       95239     2000016    c W95 FAT32 (LBA)
+/dev/sdb2           95240      189513     1979754    f W95 Ext'd (LBA)
+/dev/sdb5           95240      189513     1979751    c W95 FAT32 (LBA)
+
+Command (m for help): w   #保存
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+
+WARNING: Re-reading the partition table failed with error 16: 设备或资源忙.
+The kernel still uses the old table.
+The new table will be used at the next reboot.
+
+WARNING: If you have created or modified any DOS 6.x
+partitions, please see the fdisk manual page for additional
+information.
+Syncing disks.
+[root@localhost ~]# find /dev/sdb*
+/dev/sdb
+/dev/sdb1
+/dev/sdb2
+/dev/sdb5
+mkfs.vfat: /dev/sdb1 contains a mounted file system.
+[root@localhost ~]# mkfs.vfat /dev/sdb1
+mkfs.vfat 2.11 (12 Mar 2005)
+[root@localhost ~]# mkfs.vfat /dev/sdb5    
+mkfs.vfat 2.11 (12 Mar 2005)
+[root@localhost ~]# cd /mnt
+[root@localhost mnt]# mkdir sd1 sd5
+[root@localhost mnt]# mount /dev/sdb1 sd1
+[root@localhost mnt]# mount /dev/sdb5 sd5     
+
+----------------------------------------------------------
+
+#一下是两个2G的分区合并成一个4G的，方法类似，不在累述。
+
+[root@localhost ~]# fdisk /dev/sdb
+
+The number of cylinders for this disk is set to 189513.
+There is nothing wrong with that, but this is larger than 1024,
+and could in certain setups cause problems with:
+1) software that runs at boot time (e.g., old versions of LILO)
+2) booting and partitioning software from other OSs
+   (e.g., DOS FDISK, OS/2 FDISK)
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): p
+
+Disk /dev/sdb: 4075 MB, 4075290624 bytes
+7 heads, 6 sectors/track, 189513 cylinders
+Units = cylinders of 42 * 512 = 21504 bytes
+Disk identifier: 0x00000000
+
+   Device Boot      Start         End      Blocks   Id System
+/dev/sdb1               1       95239     2000016    c W95 FAT32 (LBA)
+/dev/sdb2           95240      189513     1979754    f W95 Ext'd (LBA)
+/dev/sdb5           95240      189513     1979751    c W95 FAT32 (LBA)
+
+Command (m for help): d
+Partition number (1-5): 1
+
+Command (m for help): d
+Partition number (1-5): 2
+
+Command (m for help): d 
+No partition is defined yet!
+
+Command (m for help): p
+
+Disk /dev/sdb: 4075 MB, 4075290624 bytes
+7 heads, 6 sectors/track, 189513 cylinders
+Units = cylinders of 42 * 512 = 21504 bytes
+Disk identifier: 0x00000000
+
+   Device Boot      Start         End      Blocks   Id System
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+
+Partition number (1-4): 1
+First cylinder (1-189513, default 1): 
+Using default value 1
+Last cylinder or +size or +sizeM or +sizeK (1-189513, default 189513): 
+Using default value 189513
+
+Command (m for help): t
+Selected partition 1
+Hex code (type L to list codes): c
+Changed system type of partition 1 to c (W95 FAT32 (LBA))
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+
+WARNING: Re-reading the partition table failed with error 16: 设备或资源忙.
+The kernel still uses the old table.
+The new table will be used at the next reboot.
+
+WARNING: If you have created or modified any DOS 6.x
+partitions, please see the fdisk manual page for additional
+information.
+Syncing disks.
+[root@localhost ~]# mkfs.vfat /dev/sdb1
+mkfs.vfat 2.11 (12 Mar 2005)

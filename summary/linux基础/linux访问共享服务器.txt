@@ -1,0 +1,6 @@
+\\iseedocs.dopod.com
+
+ubuntu下共享 smb://iseedocs.dopod.com
+
+dopod/yun_li
+Ab123456

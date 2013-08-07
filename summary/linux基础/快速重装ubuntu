@@ -1,0 +1,9 @@
+Ubuntu技巧分享,如何快速简单重装Ubuntu系统:
+
+dpkg --get-selections | grep -v deinstall > Ubuntu.files #得到已安装软件列表文件
+
+下次重装Ubuntu 的时候，执行
+
+dpkg --set-selections < Ubuntu.files
+
+sudo apt-get dselect-upgrade  更新

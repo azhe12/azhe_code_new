@@ -1,0 +1,20 @@
+Cr-a z	--help
+Cr-a q	--quit
+Cr-a o  --config
+Cr-a l	--log
+
+
+
+Serial port setup  
+	A -    Serial Device      : /dev/ttyUSB0
+	F - Hardware Flow Control : No 
+Modem and dialing
+	A - Init string .........
+	B - Reset string ........
+	K - Hang-up string ......
+
+
+ 
+Note:当ttyUSB0改变为ttyUSB1时，解决方法vi /home/azhe/.minirc.dfl
+修改其中的pu port             /dev/ttyUSB0。
+

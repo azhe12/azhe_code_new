@@ -1,0 +1,9 @@
+sudo apt-get install cscope  ''安装cscope
+sudo apt-get install ctags   ''安装ctags
+
+cp -r vim_tags/* ~/.vim/
+cp vimrc ~/.vimrc
+
+./mktags
+
+

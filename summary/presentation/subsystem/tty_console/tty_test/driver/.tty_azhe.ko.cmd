@@ -1,0 +1,1 @@
+cmd_/home/azhe/other/ldd_azhe/tty/driver/tty_azhe.ko := arm-eabi-ld -r  -T /home/azhe/work/multi-git/protd/gep/kernel/scripts/module-common.lds --build-id  -o /home/azhe/other/ldd_azhe/tty/driver/tty_azhe.ko /home/azhe/other/ldd_azhe/tty/driver/tty_azhe.o /home/azhe/other/ldd_azhe/tty/driver/tty_azhe.mod.o

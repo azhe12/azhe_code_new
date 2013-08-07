@@ -1,0 +1,32 @@
+UbuntuSamba安装与创建目录，特别值得一提的是Samba有很多值得学习的地方，这里我们主要介绍Ubuntu Samba，包括介绍Ubuntu Samba等方面。Ubuntu 是一个完全以 Linux 为基础的操作系统, 可自由的获得，并提供社区和专业的支持。
+一. Ubuntu samba的安装
+sudo apt-get insall samba
+sudo apt-get install smbfs
+二. 创建共享目录
+mkdir /home/phinecos/share
+sodu chmod 777 /home/phinecos/share
+三. 创建Ubuntu Samba配置文件
+1. 保存现有的配置文件 sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+2. 修改现配置文件 sudo gedit /etc/samba/smb.conf
+在smb.conf最后添加
+[share]
+path = /home/phinecos/share
+available = yes
+browsealbe = yes
+public = yes
+writable = yes
+四. 创建Ubuntu Samba帐户
+sudo touch /etc/samba/smbpasswd
+sudo smbpasswd -a azhe
+然后会 要求你输入samba帐户的密码
+密码:azhe
+
+sudo smbpasswd -n azhe  ##不需要密码
+
+五. 然后按照提示设置密码
+3. 任意选择你想要共享的文件夹，右键选择Properties，然后点击Share；
+4. 输入共享名，一般情况下可以跟文件夹同名，如果下面第三步出错请换个名字试试；
+5. 选中第一个选项 “share this fold” ，第二个也可以选上，第三个建议不要选；
+应用共享
+七，Ubuntu Samba使用
+可以到windows下输入ip使用了，在文件夹处输入 "\\" + "Ubuntu机器的ip或主机名" + "\\" + "share"

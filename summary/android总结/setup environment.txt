@@ -1,0 +1,158 @@
+ 
+
+1.Mandatory Packages
+
+$sudo apt-get install git-core gnupg sun-java6-jdk flex bison gperf libsdl-dev libesd0-dev libwxgtk2.6-dev build-essential zip curl libncurses5-dev zlib1g-dev minicom
+
+2.if jdk 5 required
+
+ please refer attach file: How to install sun-java1.5-jdk under Ubuntu10.0410.10.txt
+
+3.Get code from server by git
+
+Pleae refer to attach file:
+
+RE Gerrit Server 8x60 code base  is online on andssd3 now.zip
+
+for more information about git ,please refer to the attach file Gerrit Help.zip
+
+Note:if you have problem about private key when config git,please make sure you have typed cmd:ssh-add
+
+ 
+
+ 
+
+4.Get code from server by P4
+
+ 
+
+4.1.get p4 bin from:
+
+http://www.perforce.com/perforce/products/p4v.html
+
+ 
+
+4.2Configuration
+
+P4 IP address: 10.8.136.125:1667
+
+If above IP can’t work well please use below IP to instead.
+
+10.8.136.126:1668
+
+Account : KD_SSD
+
+Password : S=PYuq1a
+
+Login domain : htctaoyuan
+
+ 
+
+info.png
+
+ 
+
+ 
+
+5. Get latest ROM from Dashboard:
+
+http://10.8..136.14/AND/Main.jsp
+
+
+6..How to download ROM images
+
+ 
+
+Fastboot flash image command
+
+$fastboot flash partition file_name
+
+Flash zip file:            
+
+$fastboot flash zip CL.zip
+
+Flash kernel image:
+
+$fastboot flash boot android.vmlinux
+
+Flash hboot image: 
+
+$ fastboot flash hboot android.swbootloader
+
+Flash system image:       
+
+$ fastboot flash system system.img
+
+Flash userdata image:    
+
+$ fastboot flash userdata userdata.img
+
+Flash rootfs image:
+
+$ fastboot flash rootfs rootfs.img
+
+
+
+7.How to make codes
+
+7.1 for hboot:
+
+huashan Prj
+
+Make omap3630
+
+Huashan Prj
+
+Make omap3430
+
+7.2 for kernel
+
+Huashan prj
+
+Make omap_huashan_defconfig
+
+Make
+
+Huangshan prj
+
+Make omap_huangshan_defconfig
+
+Make
+
+ 
+
+7.3 fro framework
+
+Method1:
+
+Use SDK Request
+
+Please refer the attach files:
+
+How to use SDK Request tool.doc              How_to_copy_extra_files_in_SDK_Request_tool.doc
+
+Method2:
+
+Open url
+
+http://10.8.136.14/AND/Main.jsp
+
+there is always a build_steps and [Requirements] note for each prj each version
+
+eg: Device:Huashan Line Huashan_Dopod_CHS_NEL
+
+[Requirements] For DDK build, Please install bison 2.3, tofrodos , and gawk first
+
+build_steps=. build/envsetup.sh ;./set_watermark.sh no ; partner_setup huashan Huashan_Dopod_CHS_DEBUG ;sync_siezip Huashan_CMCC ; apply_siezip; make -j8 PRODUCT-huashan-userdebug ; ../build_ddk_huashan_Inc34.sh ; make -j8 PRODUCT-huashan-userdebug
+
+please follow the requirements and build steps.
+
+8.How to commit a modiy to code server?
+
+Please let me know if you want do it first time!!!
+
+ 
+
+ 
+
+It will be precious If the above 8 steps are incorrect or  something must need to be added,please feel free to let me know!

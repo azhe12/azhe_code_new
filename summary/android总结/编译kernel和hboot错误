@@ -1,0 +1,7 @@
+1.编译hboot时出现，提示“没有 arm-eabi-gcc“
+
+分析：虽然/etc/profile中已经添加了toolchain路径，可是
+编译hboot需root权限，sudo make 时，通过sodu -s 切换到root，echo $PATH  发现PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin
+解决：$sudo -s
+#source /etc/profile
+

@@ -1,0 +1,49 @@
+1.$crash vmlinux *.elf
+2.>set -c 0  //查看CPU0进程状态
+>set -c 1  //查看CPU1进程状态
+PID: 2771
+COMMAND: "oftware.compass"
+   TASK: c343bb80  [THREAD_INFO: c78de000]
+    CPU: 0
+  STATE: TASK_RUNNING (ACTIVE)
+
+3.>bt -T 2771		//打印此进程函数堆栈
+[c78df9fc] find_get_page at c00edd48
+  [c78dfa14] __find_get_block_slow at c013b978
+  [c78dfa3c] __find_get_block at c013bfa0
+  [c78dfa74] __getblk at c013bfe8
+  [c78dfa9c] zone_watermark_ok at c00f2fe4
+  [c78dfab4] get_page_from_freelist at c00f38a4
+  [c78dfaec] update_curr at c008243c
+  [c78dfb34] enqueue_entity at c0082d24
+  [c78dfb54] enqueue_task_fair at c0083504
+  [c78dfba4] update_curr at c008243c
+  [c78dfbac] walk_tg_tree at c008359c
+  [c78dfc14] update_curr at c008243c
+  [c78dfc5c] enqueue_entity at c0082d24
+  [c78dfc84] check_preempt_wakeup at c0082bb0
+  [c78dfcb4] try_to_wake_up at c0085ea8
+  [c78dfd04] __raw_spin_lock at c051373c
+  [c78dfd64] tg_shares_up at c0083034
+  [c78dfd68] tg_nop at c0074c68
+  [c78dfd8c] tg_shares_up at c0083228
+  [c78dfdc4] update_curr at c008243c
+  [c78dfdcc] walk_tg_tree at c008359c
+  [c78dfe0c] enqueue_entity at c0082d24
+  [c78dfe34] check_preempt_wakeup at c0082bb0
+  [c78dfe64] try_to_wake_up at c0085ea8
+  [c78dfe88] cpu_bit_bitmap at c0517ad8
+  [c78dfe8c] l2x0_cache_sync at c004cf08
+
+
+4.>p prcmu_wd		//查找变量
+
+prcmu_wd = $3 = (struct prcmu_wd_struct *) 0xcd2c83a0
+
+
+5.list -s prcmu_wd_struct 0xcd2c83a0  //查看此地址处的内存
+
+
+6.>dis -l 0x2440232     //PC指针位置
+
+7.>disassemble 0x12123a  //指定地址反汇编

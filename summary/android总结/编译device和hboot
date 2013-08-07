@@ -1,0 +1,9 @@
+$cp htcc_merge_pkg.sh p4_03_gingerbread
+$./htcc_merge_pkg.sh
+#以下步骤dashboard上有说明。
+$. build/envsetup.sh ; partner_setup pydtd PydTD_Generic_WWE_DEBUG ; partner_setup pydtd PydTD_CMCC_CHS_DEBUG ; make -j4 PRODUCT-htc_pydtd-userdebug 
+
+
+hboot
+$修改PATH为arm-eabi-4.4.0
+$make u8500

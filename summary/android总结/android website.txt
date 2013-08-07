@@ -1,0 +1,3 @@
+http://developer.android.com/
+http://source.android.com/
+http://source.android.com/porting/index.html

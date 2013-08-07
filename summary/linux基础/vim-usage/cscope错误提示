@@ -1,0 +1,8 @@
+如果提示： cp: cannot stat `xcscope.el': No such file or directory
+
+那么就先删除cscope：sudo apt-get purge cscope
+
+然后重新安装：sudo apt-get install cscope-el cscope
+
+很多人忘了安装cscope-el所以在安装cscope后找不到xcscope.el
+

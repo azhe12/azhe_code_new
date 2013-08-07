@@ -1,0 +1,21 @@
+1.Access http://andssd3.htc.com:8080/#admin,projects
+2.Get Huashan souce code
+$repo sync kernel_omap_35 
+3.Build kernel (arm-eabi-4.4.3)
+$make ARCH=arm CROSS_COMPILE=arm-eabi- omap_huashan_defconfig
+$make ARCH=arm CROSS_COMPILE=arm-eabi- -j8
+
+
+
+
+Compass code
+drivers/i2c/chips/akm8975.c
+G-sensor code
+drivers/i2c/chips/bma023.c
+P,L sensor code
+drivers/input/misc/capella_cm3602.c
+
+
+
+
+

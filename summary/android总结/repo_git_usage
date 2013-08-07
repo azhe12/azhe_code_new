@@ -1,0 +1,6 @@
+1.andssd3	kernel和hboot
+$repo sync STE8500_hboot
+
+2.git1 康桥  devices
+$git clone ssh://htccgit1.china.htc.com.tw:29418/p4_03_gingerbread.git
+

@@ -1,0 +1,25 @@
+7.How to make codes
+
+7.1 for hboot:
+
+huashan Prj
+
+Make omap3630
+
+Huashan Prj
+
+Make omap3430
+
+7.2 for kernel
+
+Huashan prj
+
+Make omap_huashan_defconfig
+
+Make
+
+Huangshan prj
+
+Make omap_huangshan_defconfig
+
+Make

@@ -1,0 +1,5 @@
+1.开启kernel log
+	开启minicom,
+	手机进入hboot模式，
+	$write 1 a  
+	$boot

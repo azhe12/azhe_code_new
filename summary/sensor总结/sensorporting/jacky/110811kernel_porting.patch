@@ -1,0 +1,582 @@
+diff --git a/arch/arm/configs/htc_pydtd_evm_defconfig b/arch/arm/configs/htc_pydtd_evm_defconfig
+index 73a8fc6..5cda484 100644
+--- a/arch/arm/configs/htc_pydtd_evm_defconfig
++++ b/arch/arm/configs/htc_pydtd_evm_defconfig
+@@ -924,11 +924,11 @@ CONFIG_U8500_MODEM_IPC_SPI=y
+ CONFIG_U8500_MODEM_IPC_LOOPBACK=y
+ # CONFIG_U8500_MODEM_IPC_THROUGHPUT is not set
+ CONFIG_STE_AUDIO_IO_DEV=n
+-CONFIG_MPU_SENSORS_MPU3050=y
++#CONFIG_MPU_SENSORS_MPU3050=y
+ # CONFIG_MPU_SENSORS_ACCELEROMETER_NONE is not set
+ # CONFIG_MPU_SENSORS_ADXL346 is not set
+ # CONFIG_MPU_SENSORS_BMA150 is not set
+-CONFIG_MPU_SENSORS_BMA250=y
++#CONFIG_MPU_SENSORS_BMA250=y
+ # CONFIG_MPU_SENSORS_BMA222 is not set
+ # CONFIG_MPU_SENSORS_KXSD9 is not set
+ # CONFIG_MPU_SENSORS_KXTF9 is not set
+@@ -938,7 +938,7 @@ CONFIG_MPU_SENSORS_BMA250=y
+ # CONFIG_MPU_SENSORS_MMA8450 is not set
+ # CONFIG_MPU_SENSORS_MMA845X is not set
+ # CONFIG_MPU_SENSORS_COMPASS_NONE is not set
+-CONFIG_MPU_SENSORS_AK8975=y
++#CONFIG_MPU_SENSORS_AK8975=y
+ # CONFIG_MPU_SENSORS_MMC314X is not set
+ # CONFIG_MPU_SENSORS_AMI30X is not set
+ # CONFIG_MPU_SENSORS_HMC5883 is not set
+@@ -946,7 +946,7 @@ CONFIG_MPU_SENSORS_AK8975=y
+ # CONFIG_MPU_SENSORS_YAS529 is not set
+ # CONFIG_MPU_SENSORS_HSCDTD002B is not set
+ # CONFIG_MPU_SENSORS_HSCDTD004A is not set
+-CONFIG_MPU_SENSORS_TIMERIRQ=y
++#CONFIG_MPU_SENSORS_TIMERIRQ=y
+ # CONFIG_MPU_SENSORS_DEBUG is not set
+ CONFIG_HAVE_IDE=y
+ # CONFIG_IDE is not set
+@@ -1264,9 +1264,9 @@ CONFIG_I2C_NOMADIK=y
+ #
+ # CONFIG_SENSORS_AKM8976 is not set
+ # CONFIG_SENSORS_AKM8973 is not set
+-# CONFIG_SENSORS_AKM8975 is not set
++CONFIG_SENSORS_AKM8975=y
+ # CONFIG_SENSORS_BMA150 is not set
+-# CONFIG_SENSORS_BMA250 is not set
++CONFIG_SENSORS_BMA250=y 
+ # CONFIG_INPUT_ISL29028 is not set
+ CONFIG_INPUT_ISL29029=y
+ # CONFIG_INPUT_CAPELLA_CM3628 is not set
+diff --git a/arch/arm/mach-ux500/board-pydtd.c b/arch/arm/mach-ux500/board-pydtd.c
+index 1d77ed8..b239e4d 100644
+--- a/arch/arm/mach-ux500/board-pydtd.c
++++ b/arch/arm/mach-ux500/board-pydtd.c
+@@ -604,7 +604,7 @@ static struct isl29028_platform_data isl29029_pdata = {
+ 	.lt = 0x15,
+ 	.ht = 0x16,
+ };
+-
++#ifdef CONFIG_MPU_SENSORS_MPU3050
+ static struct mpu3050_platform_data mpu3050_data = {
+ 	.int_config = 0x10,
+ 	.orientation = { 1, 0, 0,
+@@ -634,6 +634,26 @@ static struct mpu3050_platform_data mpu3050_data = {
+ 				0, 0, -1 },
+ 	},
+ };
++#else
++static struct  bma250_platform_data bma250_pdata = {
++//	.intr = 171,
++	.chip_layout = 1,     	/*TODO: Jacky, need to be checked*/
++	.calibration_mode = 0,	/*TODO: Jacky, need to be checked*/
++    .gs_kvalue = 0,			/*TODO: Jacky, need to be checked*/
++};
++#define PYDTD_COMPASS_LAYOUTS         { \
++                { { 0,  1, 0}, {-1,  0,  0}, {0, 0,  1} }, \
++                { { 0, -1, 0}, { 1,  0,  0}, {0, 0, -1} }, \
++                { {-1,  0, 0}, { 0, -1,  0}, {0, 0,  1} }, \
++                { { 1,  0, 0}, { 0,  0,  1}, {0, 1,  0} }  \
++                                        }
++
++static struct akm8975_platform_data akm8975_pdata = {
++	.layouts = PYDTD_COMPASS_LAYOUTS,			/*TODO: Jacky, need to be checked*/
++	.irq_trigger = 1,
++};
++#endif
++
+ #ifdef CONFIG_TPS65200
+ #define PYDTD_GPIO_CHG_STAT	(97)
+ static struct tps65200_platform_data tps65200_data = {
+@@ -669,11 +689,24 @@ static struct i2c_board_info __initdata pydtd_i2c0_devices[] = {
+ 		.platform_data = &isl29029_pdata,
+ 		.irq = GPIO_TO_IRQ(169),
+ 	},
++#ifdef CONFIG_MPU_SENSORS_MPU3050
+ 	{
+ 		I2C_BOARD_INFO("mpu3050", 0xD0 >> 1),
+ 		.irq = GPIO_TO_IRQ(199),
+ 		.platform_data = &mpu3050_data,
+ 	},
++#else
++	{
++		I2C_BOARD_INFO("bma250", 0x30 >> 1),
++		.irq = GPIO_TO_IRQ(171),
++		.platform_data = &bma250_pdata,
++	},
++	{
++		I2C_BOARD_INFO("akm8975", 0x1A >> 1),
++		.irq = GPIO_TO_IRQ(153),
++		.platform_data = &akm8975_pdata,
++	},
++#endif
+ #ifdef CONFIG_TPS65200
+ 	{
+ 		I2C_BOARD_INFO("tps65200", 0xD4 >> 1),
+diff --git a/drivers/i2c/chips/akm8975.c b/drivers/i2c/chips/akm8975.c
+index 64ada25..b390720 100644
+--- a/drivers/i2c/chips/akm8975.c
++++ b/drivers/i2c/chips/akm8975.c
+@@ -26,7 +26,7 @@
+ #include <linux/akm8975.h>
+ #include<linux/earlysuspend.h>
+ 
+-#define DEBUG 0
++#define DEBUG 1
+ #define MAX_FAILURE_COUNT 3
+ /*#define AKM_EARLY_SUSPEND 1*/
+ 
+@@ -71,8 +71,20 @@ static int failure_count;
+ 
+ static short akmd_delay;
+ 
++// 110803 Jacky
++#ifndef DEBUG_JACKY
++#define DEBUG_JACKY
++#endif
++#undef DEBUG_JACKY
++
++#ifndef DEBUG_JACKY
+ static int debug_flag;
+ static int debug_flag_fatal_err;
++#else
++static int debug_flag = 1;
++static int debug_flag_fatal_err = 1;
++#endif
++
+ static int fatal_err_pr_count;
+ 
+ static atomic_t suspend_flag = ATOMIC_INIT(0);
+@@ -122,6 +134,8 @@ static int AKI2C_RxData(char *rxData, int length)
+ 			__func__, AKM8975_RETRY_COUNT);
+ 		return -EIO;
+ 	}
++DIF("%s success in %d times\n",
++			__func__, loop_i);
+ 	return 0;
+ }
+ 
+@@ -156,17 +170,22 @@ static int AKI2C_TxData(char *txData, int length)
+ 			__func__, AKM8975_RETRY_COUNT);
+ 		return -EIO;
+ 	}
++DIF("%s success in %d times\n",
++			__func__, loop_i);
+ 	return 0;
+ }
+ 
+ static int AKECS_StartMeasure(void)
+ {
++DIF("Hi Jacky, in %s() ++, line %d. data ready = %d, \n\n ",__func__,__LINE__, atomic_read(&data_ready));
+ 	char buffer[2];
+ 	atomic_set(&data_ready, 0);
+ 
+ 	/* Set measure mode */
+ 	buffer[0] = AK8975_REG_CNTL;
+ 	buffer[1] = AK8975_CNTL_SNG_MEASURE;
++	
++	DIF("Hi Jacky, in %s() --!!!!, line %d. data ready = %d, \n\n ",__func__,__LINE__, atomic_read(&data_ready));
+ 
+ 	/* Set data */
+ 	return AKI2C_TxData(buffer, 2);
+@@ -211,6 +230,7 @@ static int AKECS_StartFuseRead(void)
+ 
+ static int AKECS_GetData(void)
+ {
++DIF("Hi Jacky in %s(),Line %d\n\n",__func__,__LINE__);
+ 	char buffer[RBUFF_SIZE_8975 + 1];
+ 	int ret;
+ 
+@@ -238,12 +258,15 @@ static int AKECS_GetData(void)
+ 		__func__, sense_data[0], sense_data[1],
+ 		sense_data[2], sense_data[3], sense_data[4],
+ 		sense_data[5], sense_data[6], sense_data[7]);
++	
++DIF_FATAL_ERR("Hi Jacky, in %s() success!!!!, line %d. data ready = %d, \n\n ",__func__,__LINE__, atomic_read(&data_ready));
+ 
+ 	return 0;
+ }
+ 
+ static int AKECS_SetMode(char mode)
+ {
++DIF("Hi Jacky in %s(),mode =0x%x\n\n",__func__,mode);
+ 	int ret;
+ 
+ 	switch (mode) {
+@@ -262,19 +285,23 @@ static int AKECS_SetMode(char mode)
+ 
+ 	/* wait at least 300us after changing mode */
+ 	mdelay(1);
++DIF("Hi Jacky in %s(),Line %d success!!\n\n",__func__,__LINE__);
+ 	return ret;
+ }
+ 
+ static int AKECS_TransRBuff(char *rbuf, int size)
+ {
++DIF("Hi Jacky, in %s(), line %d. \n\n ",__func__,__LINE__);
+ 	wait_event_interruptible_timeout(data_ready_wq,
+ 					 atomic_read(&data_ready), 1000);
+ 
+ 	if (!atomic_read(&data_ready)) {
++DIF("Hi Jacky, in %s(), line %d. data ready = %d \n\n ",__func__,__LINE__, atomic_read(&data_ready));
+ 		if (!atomic_read(&suspend_flag)) {
+ 			D("%s: DATA\n", __func__);
+ 			failure_count++;
+ 			if (failure_count >= MAX_FAILURE_COUNT) {
++DIF("Hi Jacky, in %s(), line %d. \n\n ",__func__,__LINE__);
+ 				E("%s: successive %d failure.\n",
+ 				       __func__, failure_count);
+ 				debug_flag_fatal_err = 1;
+@@ -283,6 +310,7 @@ static int AKECS_TransRBuff(char *rbuf, int size)
+ 				failure_count = 0;
+ 			}
+ 		}
++DIF("Hi Jacky, in %s(), line %d. return -1\n\n ",__func__,__LINE__);
+ 		return -1;
+ 	}
+ 
+@@ -292,6 +320,7 @@ static int AKECS_TransRBuff(char *rbuf, int size)
+ 	mutex_unlock(&sense_data_mutex);
+ 
+ 	failure_count = 0;
++DIF("Hi Jacky, in %s(), line %d. return 0. \n\n ",__func__,__LINE__);
+ 	return 0;
+ }
+ 
+@@ -384,7 +413,7 @@ static int AKECS_GetOpenStatus(void)
+ 
+ static int AKECS_GetCloseStatus(void)
+ {
+-	D("%s:\n", __func__);
++	DIF("%s:\n", __func__);
+ 	wait_event_interruptible(open_wq, (atomic_read(&open_flag) <= 0));
+ 	return atomic_read(&open_flag);
+ }
+@@ -593,6 +622,7 @@ akmd_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
+ 		/*D("%s: ECS_IOCTL_SET_MODE2\n",
+ 			__func__);*/
+ 		ret = AKECS_SetMode((char)mode);
++		D("%s: calling AKECS_SetMode, ret = %d\n", __func__,ret);
+ 		if (ret < 0)
+ 			return ret;
+ 		/*D("%s: ECS_IOCTL_SET_MODE2 success\n",
+@@ -600,8 +630,8 @@ akmd_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
+ 		break;
+ 	case ECS_IOCTL_GETDATA:
+ 		/*D("%s: ECS_IOCTL_GETDATA\n", __func__);*/
+-		DIF_FATAL_ERR("%s: calling AKECS_TransRBuff\n", __func__);
+ 		ret = AKECS_TransRBuff(msg, RBUFF_SIZE_8975);
++		D("%s: calling AKECS_TransRBuff, ret = %d\n", __func__,ret);
+ 		if (ret < 0)
+ 			return ret;
+ 		/*D("%s: ECS_IOCTL_GETDATA: success\n",
+@@ -640,13 +670,16 @@ akmd_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
+ 			return -EFAULT;
+ 		break;
+ 	case ECS_IOCTL_GETDATA:
+-		msg[8] = debug_flag;/*
+-		DIF("msg(0, 1, 2, 3, 4, 5, 6, 7, 8) = (0x%x, 0x%x, 0x%x, 0x%x,"
++		msg[8] = debug_flag;
++		D("msg(0, 1, 2, 3, 4, 5, 6, 7, 8) = (0x%x, 0x%x, 0x%x, 0x%x,"
+ 		  " 0x%x, 0x%x, 0x%x, 0x%x, 0x%x)\n",
+ 			msg[0], msg[1],	msg[2], msg[3], msg[4], msg[5], msg[6],
+-			msg[7],	msg[8]);*/
++			msg[7],	msg[8]);
+ 		if (copy_to_user(argp, &msg, sizeof(msg)))
++			{
++			D("ECS_IOCTL_GETDATA,copy_to_user error!!!!\n");
+ 			return -EFAULT;
++			}
+ 		break;
+ 	case ECS_IOCTL_GET_OPEN_STATUS:
+ 	case ECS_IOCTL_GET_CLOSE_STATUS:
+@@ -664,14 +697,17 @@ akmd_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
+ 	default:
+ 		break;
+ 	}
++D("%s() success!!!!\n", __func__);
+ 	return 0;
+ }
+ 
+ static void akm_work_func(struct work_struct *work)
+ {
++DIF("%s ++\n",__func__);
+ 	if (AKECS_GetData() < 0)
+ 		E("%s: Get data failed\n", __func__);
+ 	enable_irq(this_client->irq);
++DIF("%s --\n",__func__);
+ }
+ 
+ static irqreturn_t akm8975_interrupt(int irq, void *dev_id)
+@@ -926,6 +962,9 @@ err_create_class:
+ 
+ int akm8975_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ {
++#ifdef	DEBUG_JACKY
++DIF("akm8975_probe ++\n");
++#endif
+ 	struct akm8975_data *akm;
+ 	int err = 0;
+ 	char msg[RBUFF_SIZE_8975 + 1];
+@@ -1031,10 +1070,17 @@ int akm8975_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 	atomic_set(&a_flag, 0);
+ 	atomic_set(&t_flag, 0);
+ 	atomic_set(&mv_flag, 0);
+-
++	
++#ifndef DEBUG_JACKY
+ 	debug_flag = 0;
+-	debug_flag_fatal_err = 0;
++	debug_flag_fatal_err = 1;
+ 	fatal_err_pr_count = 0;
++#else
++	debug_flag = 1;
++	debug_flag_fatal_err = 1;
++	fatal_err_pr_count = 1;
++
++#endif
+ 
+ #ifdef AKM_EARLY_SUSPEND
+ 	akm->early_suspend_akm.suspend = akm8975_early_suspend;
+@@ -1059,6 +1105,10 @@ int akm8975_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 		E("%s: request irq failed\n", __func__);
+ 		goto exit_irq_request_failed;
+ 	}
++	
++#ifdef	DEBUG_JACKY
++	DIF("akm8975_probe --\n");
++#endif
+ 
+ 	return 0;
+ 
+@@ -1107,6 +1157,10 @@ static struct i2c_driver akm8975_driver = {
+ 
+ static int __init akm8975_init(void)
+ {
++#ifdef	DEBUG_JACKY
++DIF("akm8975_init\n");
++#endif
++
+ 	I("AKM8975 compass driver: init\n");
+ 	return i2c_add_driver(&akm8975_driver);
+ }
+diff --git a/drivers/i2c/chips/bma250.c b/drivers/i2c/chips/bma250.c
+index 0078d25..9e99979 100644
+--- a/drivers/i2c/chips/bma250.c
++++ b/drivers/i2c/chips/bma250.c
+@@ -43,7 +43,7 @@ static struct bma250_platform_data *pdata;
+ static atomic_t PhoneOn_flag = ATOMIC_INIT(0);
+ #define DEVICE_ACCESSORY_ATTR(_name, _mode, _show, _store) \
+ struct device_attribute dev_attr_##_name = __ATTR(_name, _mode, _show, _store)
+-
++	
+ static int debug_flag;
+ static char update_user_calibrate_data;
+ 
+@@ -277,18 +277,26 @@ static int bma_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
+ 			return ret;
+ 		break;
+ 	case BMA_IOCTL_READ:
+-		if (rwbuf[0] < 1)
+-			return -EINVAL;
+-		/*ret = BMA_I2C_RxData(&rwbuf[1], rwbuf[0]);
++// Jacky 110811 add the i2c op 
++		/*if (rwbuf[0] < 1)
++			return -EINVAL;*/
++		ret = BMA_I2C_RxData(&rwbuf[1], rwbuf[0]);
+ 		if (ret < 0)
+-			return ret;*/
++		{
++			DIF("%s() BMA_IOCTL_READ ret = %d\n",__func__,ret);
++			return ret;
++		}
+ 		break;
+ 	case BMA_IOCTL_WRITE:
+-		if (rwbuf[0] < 2)
+-			return -EINVAL;
+-		/*ret = BMA_I2C_TxData(&rwbuf[1], rwbuf[0]);
++// Jacky 110811 add the i2c op
++		/*if (rwbuf[0] < 2)
++			return -EINVAL;*/
++		ret = BMA_I2C_TxData(&rwbuf[1], rwbuf[0]);
+ 		if (ret < 0)
+-			return ret;*/
++		{
++			DIF("%s() BMA_IOCTL_WRITE ret = %d\n",__func__,ret);
++			return ret;
++		}
+ 		break;
+ 	case BMA_IOCTL_WRITE_CALI_VALUE:
+ 		pdata->gs_kvalue = kbuf;
+@@ -344,8 +352,14 @@ static int bma_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
+ 
+ 	switch (cmd) {
+ 	case BMA_IOCTL_READ:
++//110811 Jacky add copy to user
+ 		/*if (copy_to_user(argp, &rwbuf, sizeof(rwbuf)))
+ 			return -EFAULT;*/
++		if (copy_to_user(argp, &rwbuf, sizeof(rwbuf)))
++		{
++			DIF("%s() BMA_IOCTL_READ copy to user error!! \n",__func__);
++			return -EFAULT;
++		}
+ 		break;
+ 	case BMA_IOCTL_READ_ACCELERATION:
+ 		if (copy_to_user(argp, &buf, sizeof(buf)))
+@@ -547,6 +561,8 @@ static struct miscdevice bma_device = {
+ 
+ int bma250_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ {
++//110803 Jacky
++E("bma250_probe ++\n");
+ 	struct bma250_data *bma;
+ 	char buffer[2];
+ 	int err = 0;
+@@ -610,7 +626,10 @@ int bma250_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 		goto err_registerAttr;
+ 	}
+ 	D("%s:OK\n", __func__);
+-	debug_flag = 0;
++	debug_flag = 1;
++	
++//110803 Jacky
++E("bma250_probe --\n");
+ 
+ 	return 0;
+ 
+@@ -648,12 +667,13 @@ static struct i2c_driver bma250_driver = {
+ #endif
+ 	.driver = {
+ 		   .name = BMA250_I2C_NAME,
+-		   },
++	   },
+ };
+ 
+ static int __init bma250_init(void)
+ {
+ 	printk(KERN_INFO "BMA250 G-sensor driver: init\n");
++	DIF("BMA250 G-sensor driver: init\n");
+ 	return i2c_add_driver(&bma250_driver);
+ }
+ 
+diff --git a/drivers/i2c/chips/isl29029.c b/drivers/i2c/chips/isl29029.c
+index 66d3e17..37460ac 100644
+--- a/drivers/i2c/chips/isl29029.c
++++ b/drivers/i2c/chips/isl29029.c
+@@ -52,7 +52,11 @@
+ #define INTR_MASK 0x77
+ #define CONFIG_MASK 0x7B
+ 
+-#define POLLING_PROXIMITY
++//#define POLLING_PROXIMITY
++/**/
++#ifdef POLLING_PROXIMITY
++#undef POLLING_PROXIMITY
++#endif
+ 
+ #ifdef POLLING_PROXIMITY
+ #define POLLING_DELAY		250
+@@ -1641,7 +1645,10 @@ static int isl29029_setup(struct isl29029_info *lpi)
+ #ifdef POLLING_PROXIMITY
+ 		IRQF_TRIGGER_FALLING,
+ #else
+-		IRQF_TRIGGER_LOW,
++
++		IRQF_TRIGGER_FALLING,
++
++//		IRQF_TRIGGER_LOW,
+ #endif
+ 		"isl29029",
+ 		lpi);
+diff --git a/fs/ioctl.c b/fs/ioctl.c
+index 2d140a7..f14b1ec 100644
+--- a/fs/ioctl.c
++++ b/fs/ioctl.c
+@@ -37,6 +37,7 @@
+ static long vfs_ioctl(struct file *filp, unsigned int cmd,
+ 		      unsigned long arg)
+ {
++//printk("Hi Jacky, jack the kernel, hoho, %s(%d)++\n",__func__,cmd);
+ 	int error = -ENOTTY;
+ 
+ 	if (!filp->f_op)
+@@ -53,8 +54,10 @@ static long vfs_ioctl(struct file *filp, unsigned int cmd,
+ 					  filp, cmd, arg);
+ 		unlock_kernel();
+ 	}
++	
+ 
+  out:
++//	printk("Hi Jacky, jack the kernel, hoho, %s(%d), return %d, --\n",__func__,cmd,error);
+ 	return error;
+ }
+ 
+@@ -190,6 +193,8 @@ static int ioctl_fiemap(struct file *filp, unsigned long arg)
+ 	u64 len;
+ 	int error;
+ 
++	printk("Hi Jacky, jack the kernel, hoho, %s(%d)++\n",__func__,arg);
++
+ 	if (!inode->i_op->fiemap)
+ 		return -EOPNOTSUPP;
+ 
+@@ -223,6 +228,8 @@ static int ioctl_fiemap(struct file *filp, unsigned long arg)
+ 	if (copy_to_user((char *)arg, &fiemap, sizeof(fiemap)))
+ 		error = -EFAULT;
+ 
++	printk("Hi Jacky, jack the kernel, hoho, %s(), return %d, --\n",__func__,error);
++
+ 	return error;
+ }
+ 
+@@ -456,6 +463,8 @@ static int file_ioctl(struct file *filp, unsigned int cmd,
+ 	struct inode *inode = filp->f_path.dentry->d_inode;
+ 	int __user *p = (int __user *)arg;
+ 
++	printk("Hi Jacky, jack the kernel, hoho, %s(%d,%d) ++\n",__func__,cmd,arg);
++
+ 	switch (cmd) {
+ 	case FIBMAP:
+ 		return ioctl_fibmap(filp, p);
+@@ -466,6 +475,8 @@ static int file_ioctl(struct file *filp, unsigned int cmd,
+ 		return ioctl_preallocate(filp, p);
+ 	}
+ 
++	printk("Hi Jacky, jack the kernel, hoho, %s(%d), --\n",__func__,cmd);
++
+ 	return vfs_ioctl(filp, cmd, arg);
+ }
+ 
+@@ -474,6 +485,8 @@ static int ioctl_fionbio(struct file *filp, int __user *argp)
+ 	unsigned int flag;
+ 	int on, error;
+ 
++	printk("Hi Jacky, jack the kernel, hoho, %s()++\n",__func__);
++
+ 	error = get_user(on, argp);
+ 	if (error)
+ 		return error;
+@@ -489,6 +502,7 @@ static int ioctl_fionbio(struct file *filp, int __user *argp)
+ 	else
+ 		filp->f_flags &= ~flag;
+ 	spin_unlock(&filp->f_lock);
++	printk("Hi Jacky, jack the kernel, hoho, %s(),ret %d--\n",__func__,error);
+ 	return error;
+ }
+ 
+@@ -553,6 +567,8 @@ int do_vfs_ioctl(struct file *filp, unsigned int fd, unsigned int cmd,
+ 	int error = 0;
+ 	int __user *argp = (int __user *)arg;
+ 
++//	printk("Hi Jacky, jack the kernel, hoho, %s()++\n",__func__);
++
+ 	switch (cmd) {
+ 	case FIOCLEX:
+ 		set_close_on_exec(fd, 1);
+@@ -607,6 +623,8 @@ int do_vfs_ioctl(struct file *filp, unsigned int fd, unsigned int cmd,
+ 			error = vfs_ioctl(filp, cmd, arg);
+ 		break;
+ 	}
++	
++//	printk("Hi Jacky, jack the kernel, hoho, %s() ret %d\n",__func__,error);
+ 	return error;
+ }
+ 

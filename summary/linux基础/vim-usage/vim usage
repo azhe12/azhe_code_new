@@ -1,0 +1,48 @@
+use vim+ctags+cscope to read Linux kernel source code.
+Note: help 
+
+
+一.build tags
+$sudo apt-get install cscope
+
+$sudo apt-get install ctags
+
+$cd kernel/
+
+$ctags -R	''build tags
+
+$vim main.c	''open random file
+$:set tags=/home/azhe/kernel/tags
+
+二.usage (CT=ctrl    all command is lowcase.)
+<CT+]>		''jump to define
+<CT+T>		''back
+
+三.函数高亮，/etc/vim/vimrc优先于~/.vimrc
+
+
+四.Taglist , winmanager
+
+:Tlist		''显示taglist窗口
+:e kernel/	''显示kernel目录的文件窗口
+
+五.cscope用法
+$sudo apt-get install cscope
+$cd kernel
+$cscope -Rbq
+$vim 
+$:cs add ~/kernel/cscope.out
+$cd kernel/
+$e drivers/i2c/chips/isl29029.c		''open a file
+$:!pwd		''shell command
+
+六.vim技巧
+$cd kernel && vim	''cscope.out所在目录
+:,cd	''添加cscope.out数据库	第一步
+：e .	''编辑当前目录
+：hide e other.c	''隐藏
+：ls			''查看隐藏的缓冲区
+:buffer 2		''打开缓冲区，而不必键入文件名
+:split			''分割窗体 上下
+:vsplit			''分割窗体 左右
+
