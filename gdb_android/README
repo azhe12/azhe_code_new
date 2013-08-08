@@ -1,0 +1,11 @@
+Example: attach surfaceflinger
+$cd $ANDROID_SOURCE/
+modify DEVICE_NAME in .config 
+$adb shell ps|grep surfacefinger
+$./run-gdb.sh attach 152
+
+(gdb) c    #surfaceflinger run continue
+(gdb) b eglSwapBuffers
+(gdb) info breakpoints
+(gdb) c		#continue
+(gdb) disable breakpoints
