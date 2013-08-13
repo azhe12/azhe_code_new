@@ -1,6 +1,10 @@
 #!/bin/bash
 set -x
 PROGRAM=$(basename $0)
+ERROR_CODE=0
+flag_repo=0
+flag_setup_env=0
+flag_build=0
 time_now()
 {
 	echo -n $(date '+%s')
@@ -13,8 +17,7 @@ repo_code()
 			repo init -u ssh://10.33.8.6:29419/manifest.git -b htc -m jb-mr0-rel_shep_sprd8825_dsda_sense50.xml; repo sync
 			;;
 		*)
-			warning "unrecognize $1"
-			exit 1
+			warning "unrecognize project $1"
 			;;
 	esac
 }
@@ -29,8 +32,7 @@ setup_env()
 			export HTCFW_ENABLED=true; export HTC_BUILD_STUBS_FLAG=true; source build/envsetup.sh ; partner_setup z4td Z4TD_Generic_WWE_DEBUG
 			;;
 		*)
-			warning "unrecognize $1"
-			exit 1
+			warning "unrecognize project $1"
 			;;
 	esac
 }
@@ -44,8 +46,7 @@ build()
 				. setup_env z4td;make -j4 PRODUCT-z4td-userdebug
 				;;
 			*)
-				warning "unrecognize $1"
-				exit 1
+				warning "unrecognize project $1"
 				;;
 	esac
 }
@@ -55,18 +56,17 @@ usage()
 	cat <<EOT 1>&2
 		Usage: $PROGRAM [--repo|--setup|--build|--help] project
 EOT
-	exit 0
 }
 
 usage_exit()
 {
 	usage
-	exit $1
+	((ERROR_CODE+=1))
 }
 warning()
 {
 	echo $@ 1>&2
-
+	((ERROR_CODE+=1))
 }
 START_TIME=$(time_now)
 
@@ -76,7 +76,7 @@ for arg in $@
 do
 	case $arg in
 		--help)
-			usage_exit 0
+			usage
 			;;
 		--repo)
 			flag_repo=1
@@ -92,19 +92,19 @@ do
 			;;
 		--*)
 			warning "unknow agrument"
-			usage_exit 1
+			usage_exit;
 			;;
 		*)
 			break
 	esac
 done
 echo "arg:$@"
-test $# != 1 && warning "support only project at same time" && exit 1
+test $ERROR_CODE = 0 && test $# != 1 && warning "support only project at same time"
 
 PROJECT=$@
-test flag_repo=1 && repo_code $PROJECT
-test flag_setup_env=1 && setup_env $PROJECT
-test flag_build=1 && build $PROJECT
+test $ERROR_CODE = 0 && test $flag_repo = 1 && repo_code $PROJECT
+test $ERROR_CODE = 0 && test $flag_setup_env = 1 && setup_env $PROJECT
+test $ERROR_CODE = 0 && test $flag_build = 1 && build $PROJECT
 ELAPSE_TIME=$(($(time_now) - $START_TIME))
 
 echo "\

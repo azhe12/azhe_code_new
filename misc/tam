@@ -1,0 +1,593 @@
+#!/bin/bash
+#
+#      Tags' Manager
+#      - manage tags for source codes
+#
+# Copyright (c) 2011, Haiping Qin <gman.haiping@gmail.com>
+#
+#set -x
+version="2.2"
+
+# Source files used by cscope and ctags
+index_file="cscope.files"
+tmpifile="/tmp/tam.ifile"
+makefile="/tmp/tam.make"
+makefile_arch="/tmp/tam.arch.make"
+
+# Don't modify these files in hand
+proj_file="$HOME/.tam.proj"
+task_file="$HOME/.tam.task"
+cron_file="$HOME/.tam.cron"
+
+install_dir="/usr/bin"
+
+T_RESET=$(tput sgr0)
+T_YELLOW=$(tput setaf 3)
+T_RED=$(tput setaf 1)
+
+# Generate tags only here
+update_tags() {
+	test -f $index_file || return
+	case $1 in
+	"cscope") do_cscope=1;;
+	"tags")   do_tags=1;;
+	"all")    do_cscope=1; do_tags=1;;
+	"update")
+		[ -f "cscope.out" ] && do_cscope=1
+		[ -f "tags" ] && do_tags=1;;
+	esac
+
+	[ $do_cscope ] && echo "  GEN     cscope" && cscope -b -i $index_file
+	[ $do_tags ] && echo "  GEN     tags" && ctags `sed "/^-/d" $index_file`
+}
+
+# $1 - directories
+# $2 - extensions
+gen_common_ifile() {
+	# Convert extensions to meet %find's format
+	exprs=""
+	for ext in $2; do
+		ext=${ext##*\.}
+		ext=${ext##*\*}
+		exprs="$exprs -o -name '*.$ext' -type f"
+	done
+	exprs=${exprs#*-o }
+
+	rm -f $tmpifile
+	if [ -z "$1" ]; then
+		# Find root directory and all subdirectories under it
+		echo $exprs | xargs find >$tmpifile
+	else
+		# Find . (or ./) seperately from other directories
+		dirs=$(echo $1 | sed 's/\.[\/]\{0,1\} //g' | sed 's/\.[\/]\{0,1\}$//g')
+		[ "$dirs" != "$1" ] && echo $exprs | xargs find -maxdepth 1 >>$tmpifile
+		[ "$dirs" ] && echo $exprs | xargs find $dirs >>$tmpifile
+	fi
+
+	if [ -f "$tmpifile" ]; then
+		rm -f $index_file
+		test $ON_HOST || echo \-k >$index_file
+		echo \-q >>$index_file
+		sed "s/^.\///" $tmpifile | sort -u >>$index_file
+		rm -f $tmpifile
+	fi
+}
+
+make_scripts() {
+echo   "include .config"
+echo   "src := \$(obj)"
+echo   "kbuild-dir := \$(if \$(filter /%,\$(src)),\$(src),\$(srctree)/\$(src))"
+echo   "kbuild-file := \$(if \$(wildcard \$(kbuild-dir)/Kbuild),\$(kbuild-dir)/Kbuild,\$(kbuild-dir)/Makefile)"
+echo   "include \$(kbuild-file)"
+echo   "include scripts/Makefile.lib"
+echo   "comm-objs-y:"
+printf "\t@printf \"OBJS=\$(real-objs-y) \$(real-objs-m) \$(lib-y)\"\n"
+printf "\t@echo \"DIRS=\$(subdir-ym)\""
+}
+
+make_scripts_arch() {
+echo   "include .config"
+echo   "-include arch/\$(ARCH)/Makefile"
+echo   "real-objs-y := \$(patsubst %/,%,\$(core-y) \$(drivers-y) \$(libs-y))"
+echo   "mach-inc := \$(patsubst %,arch/arm/mach-%/include,\$(machine-y))"
+echo   "plat-inc := \$(patsubst %,arch/arm/plat-%/include,\$(plat-y))"
+echo   "arch-object:"
+printf "\t@echo \$(real-objs-y)\n"
+echo   "arch-include:"
+printf "\t@echo \$(mach-inc) \$(plat-inc)\n"
+}
+
+# $1 - dir
+get_objs() {
+	output=$(make -i -f $makefile comm-objs-y obj=$1 2>/dev/null)
+	test $? != 0 && return 1
+
+	objs=${output#OBJS=}
+	objs=${objs%%DIRS=*}
+	[ -n "$objs" ] && kern_objs="$kern_objs $objs"
+
+	dirs=${output#*DIRS=}
+	if [ -n "$dirs" ]; then
+		# descend into sub-dirctories
+		for dir in $dirs; do
+			[ -d $dir ] && get_objs $dir
+		done
+	fi
+}
+
+gen_kernel_ifile() {
+	make_scripts >$makefile
+	make_scripts_arch > $makefile_arch
+	>$tmpifile
+
+	kern_objs=""
+	obj_list="block drivers fs ipc mm net security sound crypto kernel lib usr init scripts"
+	obj_list="$obj_list $(make -f $makefile_arch arch-object)"
+	inc_dirs="include arch/$ARCH/include $(make -f $makefile_arch arch-include)"
+	c_files=""
+	h_files=""
+
+	# get kernel objects
+	for obj in $obj_list; do
+		get_objs "$PWD/$obj"
+	done
+
+	# change .o to .c or .S
+	for file in $kern_objs; do
+		file=${file%.o}
+		if [ -f "$file.c" ]; then
+			file=${file##$PWD\/}
+			echo "$file.c" >>$tmpifile
+			c_files="$c_files $file.c"
+		elif [ -f "$file.S" ]; then
+			file=${file##$PWD\/}
+			echo "$file.S" >>$tmpifile
+		fi
+	done
+
+	# search head files from .c files that including them
+
+	# local head file format: #include "headfile.h"
+	g_hfiles=""
+	l_hfiles=$(grep "^#include \"" $c_files | sed "s/#include \"//g" | sed "s/\"[^[:alnum:]]\{0,\}$//g")
+	for file in $l_hfiles; do
+		dir=$(dirname ${file%:*})
+		[ "$dir" = "/" ] && continue
+		file=${file#*:}
+		file=${file%\"*}
+		if [ -f "$dir/$file" ]; then
+			echo "$dir/$file" >>$tmpifile
+			h_files="$h_files $dir/$file"
+		else
+			g_hfiles="$g_hfiles $file"
+		fi
+	done
+
+	# global head file format: #include <headfile.h>
+	g_hfiles="$g_hfiles $(grep "^#include <" $c_files -h | sort -u | sed "s/#include <//g" | sed "s/>[^[:alnum:]]\{0,\}$//g")"
+	for file in $g_hfiles; do
+		for dir in $inc_dirs; do
+			file=${file%>*}
+			if [ -f "$dir/$file" ]; then
+				echo "$dir/$file" >>$tmpifile
+				h_files="$h_files $dir/$file"
+				break
+			fi
+		done
+	done
+
+	# search head files from .h files that including them
+
+	# local head file format: #include "headfile.h"
+	g_hfiles=""
+	l_hfiles=$(grep "^#include \"" $h_files | sed "s/#include \"//g" | sed "s/\"[^[:alnum:]]\{0,\}$//g")
+	for file in $l_hfiles; do
+		dir=$(dirname ${file%:*})
+		[ "$dir" = "/" ] && continue
+		file=${file#*:}
+		file=${file%\"*}
+		if [ -f "$dir/$file" ]; then
+			echo "$dir/$file" >>$tmpifile
+		else
+			g_hfiles="$g_hfiles $file"
+		fi
+	done
+
+	# global head file format: #include <headfile.h>
+	g_hfiles="$g_hfiles $(grep "^#include <" $h_files -h | sort -u | sed "s/#include <//g" | sed "s/>[^[:alnum:]]\{0,\}$//g")"
+	for file in $g_hfiles; do
+		for dir in $inc_dirs; do
+			file=${file%>*}
+			if [ -f "$dir/$file" ]; then
+				echo "$dir/$file" >>$tmpifile
+				break
+			fi
+		done
+	done
+
+	for file in $(ls include/generated/); do
+		echo include/generated/$file >>$tmpifile
+	done
+
+	echo \-k > $index_file
+	echo \-q >> $index_file
+	cat $tmpifile | sort -u >>$index_file
+	#azhe
+	#rm -f $makefile $makefile_arch $tmpifile
+}
+
+# $1 - file, $2 - key, $3 - val1 {, $4 - val2, ...}
+conf_add() {
+	test $# -lt 3 && return 1
+	file="$1"
+	addfmt="$2=[$3]"
+	shift 3
+	while [ $# -gt 0 ]; do
+		addfmt="$addfmt[$1]"
+		shift
+	done
+	echo "$addfmt" >>"$file"
+}
+
+# $1 - file, $2 - key
+conf_del() {
+	test -f "$1" -a -n "$2" && sed -i "/^$2=/d" $1
+}
+
+# $1 - file, $2 - key
+# return 1 when key exists, or 0 for failed test
+conf_test() {
+	grep "^$2=" $1 1>/dev/null 2>/dev/null
+	test $? = 0 && return 1 || return 0
+}
+
+# $1 - config exppresion
+conf_key() {
+	echo "${1%%=*}"
+}
+
+# $1 - config exppresion
+# $2 - val number
+conf_val() {
+	cnt=$(($2))
+	val=${1#*=\[}
+	while [ $cnt -gt 1 ]; do
+		val=${val#*\[}
+		cnt=$(($cnt-1))
+	done
+	val=${val%%]*}
+	echo "$val"
+}
+
+# $1 - name, $2 - types, $3 - dirs
+proj_add() {
+	conf_add $proj_file "PROJ_$1" "$2" "$3"
+}
+
+proj_del() {
+	conf_del $proj_file "PROJ_$1"
+}
+
+proj_test() {
+	conf_test $proj_file "PROJ_$1"
+}
+
+proj_name() {
+	name=$(conf_key $1)
+	echo "${name#PROJ_}"
+}
+
+task_sync() {
+	tasks=$(grep "^TASK_" $task_file 2>/dev/null)
+	[ $? != 0 ] && crontab -r 1>/dev/null 2>/dev/null && return 1
+
+	>$cron_file
+	for task in $tasks; do
+		command="tam update -p \"$(conf_val "$task" 2)\""
+		cronfmt="*/$(conf_val "$task" 1) * * * * $command"
+		echo "$cronfmt" >> $cron_file
+	done
+	crontab $cron_file
+}
+
+# $1 - name, $2 - interval (minutes), $3 - asolute dir
+task_add() {
+	conf_add $task_file "TASK_$1" "$2" "$3"
+	task_sync
+}
+
+task_del() {
+	conf_del $task_file "TASK_$1"
+	task_sync
+}
+
+task_test() {
+	conf_test $task_file "TASK_$1"
+}
+
+task_name() {
+	name=$(conf_key $1)
+	echo "${name#TASK_}"
+}
+
+# USAGE: make [<opt>] [-x <extensions>] [dir1 dir2 ...]
+cmd_make() {
+	if [ ! -f $index_file ]; then
+		while getopts ":hstx:" SWITCH; do
+			case $SWITCH in
+			h) ON_HOST=1;;
+			s) tags_opt="cscope";;
+			t) tags_opt="tags";;
+			x) exts="$OPTARG";;
+			esac
+		done
+		[ -z "$exts" ] && exts="c h S"
+
+		shift $((OPTIND-1))
+		dirs="$@"
+		for dir in $dirs; do
+			test ! -d "$dir" && echo "Invalid directory: $dir" && exit 1
+		done
+
+		gen_common_ifile "$dirs" "$exts"
+	fi
+	[ -z "$tags_opt" ] && tags_opt="all"
+
+	update_tags $tags_opt
+}
+
+cmd_update() {
+	[ "$1" = "-p" -a -d "$2" ] && cd $2
+	update_tags "update"
+}
+
+cmd_kernel() {
+	test -f "$index_file" && exit 1
+
+	while [ $# -gt 0 ]; do
+		case $1 in
+		"-s")	tags_opt="cscope";;
+		"-t")	tags_opt="tags";;
+		ARCH=*)	ARCH=${1#ARCH=};;
+		esac
+		shift
+	done
+	[ -z "$tags_opt" ] && tags_opt="all"
+	[ -z "$ARCH" ] && ARCH=arm
+	[ ! -d "arch/$ARCH" ] && echo "arch/$ARCH not exist!" && exit 1
+
+	export ARCH=$ARCH
+	if [ -f ".config" ]; then
+		gen_kernel_ifile
+		update_tags $tags_opt
+	else
+		if [ "$tags_opt" = "all" ]; then
+			make cscope tags
+		else
+			make $tags_opt
+		fi
+	fi
+}
+
+# USAGE: add <name> [ -x <extension> ] [dir1 dir2 ...]
+cmd_add() {
+	test -z "$1" && exit 1
+	proj_test "$1"
+	test $? = 1 && echo "Project '$name' exists!" && exit 1
+
+	name="$1"
+	shift
+
+	if [ "$1" = "-x" ]; then
+		test -z "$2" && echo "Invalid extension" && exit 1
+		exts="$2"
+		shift 2
+	else
+		exts="c h S"
+	fi
+
+	dirs="$@"
+	for dir in $dirs; do
+		test ! -d "$dir" && echo "Invalid directory: $dir" && exit 1
+	done
+
+	proj_add "$name" "$exts" "$dirs"
+}
+
+# USAGE: del <name>
+cmd_del() {
+	[ "$1" = "-a" -o "$1" = "." ] && proj_del ".\{1,\}" || proj_del $1
+}
+
+cmd_show() {
+	projs=`grep "^PROJ_" $proj_file 2>/dev/null`
+	test $? != 0 && exit 1
+	proj=${projs#*PROJ_}
+	until [ "$proj" = "$projs" ]; do
+		echo "${T_YELLOW}$(proj_name "$proj"):${T_RESET}"
+		echo "   ${T_RED}T:${T_RESET}\"$(conf_val "$proj" 1)\""
+		echo "   ${T_RED}P:${T_RESET}\"$(conf_val "$proj" 2)\""
+		echo ""
+		projs="$proj"
+		proj=${projs#*PROJ_}
+	done
+}
+
+# USAGE: do <name> [<opt>]
+cmd_do () {
+	[ -f "$index_file" -o -z "$1" -o ! -f "$proj_file" ] && exit 1
+
+	proj=`grep "^PROJ_$1=" $proj_file 2>/dev/null`
+	[ $? != 0 ] && echo "Project '$1' doesn't exist!" && exit 1
+
+	shift
+	while getopts ":hst" SWITCH; do
+		case $SWITCH in
+		h) ON_HOST=1;;
+		s) tags_opt="cscope";;
+		t) tags_opt="tags";;
+		esac
+	done
+	[ -z "$tags_opt" ] && tags_opt="all"
+
+	gen_common_ifile "$(conf_val "$proj" 2)" "$(conf_val "$proj" 1)"
+	update_tags $tags_opt
+}
+
+# USAGE: start <name> [ <interval> ]
+cmd_start() {
+	test ! -f "$index_file" && echo "$index_file not found" && exit 1
+	test -z "$1" && echo "A task name needed!" && exit 1
+	test -z "$2" && minutes=1 || minutes=$(($3))
+
+	task_test $1
+	test $? = 1 && echo "Task '$1' exists!" && exit 1
+	task_add $1 $minutes $PWD
+}
+
+# USAGE: kill <name>
+cmd_kill() {
+	[ "$1" = "-a" -o "$1" = "." ] && task_del ".\{1,\}" || task_del $1
+}
+
+cmd_status() {
+	tasks=`grep "^TASK_" $task_file 2>/dev/null`
+	test $? != 0 && exit 1
+	for task in $tasks; do
+		echo "${T_YELLOW}$(task_name "$task"):${T_RESET}"
+		echo "   ${T_RED}T:${T_RESET}$(conf_val "$task" 1)"
+		echo "   ${T_RED}P:${T_RESET}\"$(conf_val "$task" 2)\""
+		echo ""
+	done
+}
+
+cmd_install() {
+	if [ -f "tam" ]; then
+	       sudo cp tam $install_dir/
+	       sudo chmod o+x $install_dir/tam
+	fi
+}
+
+cmd_uninstall() {
+	sudo rm -f $install_dir/tam
+}
+
+print_help() {
+case "$1" in
+"")
+echo "usage: tam [--version]"
+echo "           [help] COMMAND [ARGS]"
+echo ""
+echo "The commands are:"
+echo "   install    Copy tam to /usr/bin"
+echo "   uninstall  Remove tam from /usr/bin"
+echo "   clean      Clean all tags files under the current directory"
+echo "   make       Generate tags"
+echo "   update     Update tags"
+echo "   kernel     Generate tags for kernel"
+echo "   add        Create a project"
+echo "   del        Remove a/all project(s)"
+echo "   show       Display all projects"
+echo "   do         Generate tags using a project's parameters"
+echo "   start      Start a task to update tags periodically"
+echo "   kill       Stop a/all task(s)"
+echo "   status     Display all tasks"
+echo ""
+echo "See 'tam help COMMAND' for more information on a specific command."
+;;
+"make")
+echo "usage: tam make [<option>] [-x <extensions>] [<directories>]"
+echo ""
+echo "%option:"
+echo "   -h    Mark it then cscope will also find tags under /usr/include/ ..."
+echo "   -s    Generate cscope reference files only"
+echo "   -t    Generate ctags data file 'tags' only"
+echo ""
+echo "%extensions:"
+echo "   with the format as \"c h S\" (the default file extensions), and enclosed"
+echo "   in quotes"
+echo ""
+echo "%directories:"
+echo "   the find directories relative to the current (root) diretory. Tam will find"
+echo "   all the given directories and all their subdirectories except the root"
+echo "   directory '.' (or './'). If no directory is given, all directories will"
+echo "   be descended into for searching, including the root './'"
+echo ""
+echo "Example:"
+echo "   tam make -hs -x \"c h S\""
+echo "   tam make . arch/arm/ fs/ mm/"
+echo ""
+;;
+"update")
+echo "usage: tam update [-p <path>]"
+echo ""
+echo "Only update the existed tag file(s). A path tells where the tag file is, and"
+echo "as default, just update the current derectory"
+echo ""
+;;
+"add" | "del" | "show" | "do")
+echo "usage: tam add <name> [-x <extension>] [<directories>]"
+echo "           del <name | -a | .>"
+echo "           do <name> [<option>]"
+echo "           show"
+echo ""
+echo "These commands are used to manage the tag projects, each project has a %name, and"
+echo "%extensions as extensions of the files to find, %directories as the searching paths."
+echo "As default, the extensions is \"c h S\", and find all the directories under current."
+echo ""
+echo "The 'del' command will delete a project with name as %name, or delete all projects."
+echo "if '-a' or '.' is given rather than a name, then all projects will be deleted."
+echo ""
+echo "The 'show' command lists out all the projects."
+echo ""
+echo "The 'do' command is used to generate tags. You can specify the source file type by"
+echo "giving an option. The %option is as options of command 'tam-make'."
+echo ""
+echo "Example:"
+echo "   tam add myproj -x \"c h\" dir1 dir2 dir3"
+echo "   tam do myproj -hs"
+echo ""
+;;
+"start" | "kill" | "status")
+echo "usage: tam start <name> [<interval>]"
+echo "           kill <name | -a>"
+echo "           status"
+echo ""
+echo "Starting a task can update tags automatically and periodically. %interval specifies"
+echo "the update rate (with the unit of minute). By default, tags are updated every minute."
+echo ""
+echo "Use 'kill' command to cancel one or all tasks, depended on whether '-a' or '.' is"
+echo "given rather than a task name"
+echo ""
+echo "'status' command shows all the tasks in work"
+echo ""
+echo "Example:"
+echo "   tam start mytask 2"
+echo "   tam status"
+echo "   tam kill mytask"
+echo ""
+;;
+"kernel")
+echo "usage: tam kernel [<option>] [ARCH=<arch>]"
+echo ""
+echo "%option:"
+echo "   -s    Generate cscope reference files only"
+echo "   -t    Generate ctags data file 'tags' only"
+echo ""
+echo "The default %ARCH is 'arm'"
+echo ""
+echo "Example:"
+echo "   $ tam kernel -s ARCH=arm"
+;;
+esac
+}
+
+case "$1" in
+"") [ -f $index_file ] && update_tags "update" || print_help;;
+"-h" | "--help" | "help") print_help $2;;
+"--version") echo "Version $version";;
+"clean") rm -f cscope* tags;;
+*) cmd_$1 ${@/$1/} 2>/dev/null;;
+esac
+#set +x
+exit 0
