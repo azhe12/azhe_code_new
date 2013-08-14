@@ -24,7 +24,8 @@ install_dir="/usr/bin"
 T_RESET=$(tput sgr0)
 T_YELLOW=$(tput setaf 3)
 T_RED=$(tput setaf 1)
-
+#android
+ANDROID_SOURCE_DIR="system/core system/media device/common device/htc device/google frameworks/av frameworks/base frameworks/htc frameworks/native hardware/ vendor/htc vendor/sprd"
 # Generate tags only here
 update_tags() {
 	test -f $index_file || return
@@ -340,7 +341,17 @@ cmd_update() {
 	[ "$1" = "-p" -a -d "$2" ] && cd $2
 	update_tags "update"
 }
-
+cmd_android()
+{
+find $ANDROID_SOURCE_DIR -type f -name "*.h" \
+		-o -name "*.c" \
+		-o -name "*.cc" \
+		-o -name "*.cpp" \
+		-o -name "*.java" \
+		>$index_file
+echo "GEN cscope" && cscope -bq -i $index_file 2>/dev/null
+echo "GEN ctags" && ctags $(sed '/^-/d' $index_file) 2>/dev/null
+}
 cmd_kernel() {
 	test -f "$index_file" && exit 1
 
@@ -485,6 +496,7 @@ echo "   clean      Clean all tags files under the current directory"
 echo "   make       Generate tags"
 echo "   update     Update tags"
 echo "   kernel     Generate tags for kernel"
+echo "   android    Generate tags for Android ($ANDROID_SOURCE_DIR)"
 echo "   add        Create a project"
 echo "   del        Remove a/all project(s)"
 echo "   show       Display all projects"

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+#set -x
 PROGRAM=$(basename $0)
 ERROR_CODE=0
 flag_repo=0
@@ -111,4 +111,4 @@ echo "\
 /*************************** \
 Done! Elipse:  $(($ELAPSE_TIME / 60))m $(($ELAPSE_TIME % 60))s \
 ****************************/"
-set +x
+#set +x
