@@ -98,7 +98,6 @@ do
 			break
 	esac
 done
-echo "arg:$@"
 test $ERROR_CODE = 0 && test $# != 1 && warning "support only project at same time"
 
 PROJECT=$@
