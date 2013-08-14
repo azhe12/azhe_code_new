@@ -305,7 +305,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'
 "some key map
 "==============================================================================
 ",cd Switch to current dir
-map <leader>cd :cd %:p:h<cr>:set tags+=tags<cr>:cs add cscope.out<cr>
+map <leader>cd :set tags+=tags<cr>:cs add cscope.out<cr>
 "F4 保存并make
 map <F4> :w!<cr>:make<cr>
 "清除高亮显示
