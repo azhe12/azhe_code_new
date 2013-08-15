@@ -20,10 +20,10 @@ nmap -q <ESC>:set nonu<CR>
 
 "new-omni-completion(全能补全)
 "打开文件类型检测, 加了这句才可以用智能补全
-filetype plugin indent on
-set completeopt=longest,menu
+"filetype plugin indent on
+"set completeopt=longest,menu
 "supertab插件
-"let g:SuperTabRetainCompletionType=2
+"let g:SuperTabRetainCompletionType=25
 "let g:SuperTabDefaultCompletionType="<C-X><C-O>"
 "使用 quickfix 窗口来显示 cscope 结果
 "set cscopequickfix=s-,c-,d-,i-,t-,e-
@@ -266,7 +266,7 @@ set noswapfile
 "==============================================================================
 " => Text options
 "==============================================================================
-"8字符缩进
+"4字符缩进
 set shiftwidth=4
 set softtabstop=4
 set tabstop=4
@@ -309,7 +309,7 @@ map <leader>cd :set tags+=tags<cr>:cs add cscope.out<cr>
 "F4 保存并make
 map <F4> :w!<cr>:make<cr>
 "清除高亮显示
-"map <F2> :nohl<cr>
+map <F2> :nohl<cr>
 "Super paste 可在不同文件的文本框中复制粘贴
 "插入模式下C-a全局选中
 inoremap <C-a> <esc>ggVG
@@ -357,12 +357,12 @@ let g:Tb_ForceSyntaxEnable = 1
 "==============================================================================
 "for OmniCppComplete.vim 补全插件
 "==============================================================================
-set completeopt=menu
-let OmniCpp_ShowPrototypeInAbbr = 1
-let OmniCpp_DefaultNamespaces = ["std"]     " 逗号分割的字符串
-let OmniCpp_MayCompleteScope = 1
-let OmniCpp_ShowPrototypeInAbbr = 1
-let OmniCpp_SelectFirstItem = 2
+"set completeopt=menu
+"let OmniCpp_ShowPrototypeInAbbr = 1
+"let OmniCpp_DefaultNamespaces = ["std"]     " 逗号分割的字符串
+"let OmniCpp_MayCompleteScope = 1
+"let OmniCpp_ShowPrototypeInAbbr = 1
+"let OmniCpp_SelectFirstItem = 2
 " c-j自动补全，当补全菜单打开时，c-j,k上下选择
 "imap <expr> <c-j>      pumvisible()?"\<C-N>":"\<C-X><C-O>"
 "imap <expr> <c-k>      pumvisible()?"\<C-P>":"\<esc>"
