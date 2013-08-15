@@ -350,7 +350,7 @@ find $ANDROID_SOURCE_DIR -type f -name "*.h" \
 		-o -name "*.java" \
 		>$index_file
 echo "GEN cscope" && cscope -bq -i $index_file 2>/dev/null
-echo "GEN ctags" && ctags $(sed '/^-/d' $index_file) 2>/dev/null
+echo "GEN ctags" && ctags -c++-kinds=+p --fields=+iaS --extra=+q $(sed '/^-/d' $index_file) 2>/dev/null
 }
 cmd_kernel() {
 	test -f "$index_file" && exit 1
