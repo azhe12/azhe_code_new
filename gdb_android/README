@@ -1,4 +1,4 @@
-Example: attach surfaceflinger
+1. Example: attach surfaceflinger
 $cd $ANDROID_SOURCE/
 modify DEVICE_NAME in .config 
 $adb shell ps|grep surfacefinger
@@ -9,3 +9,22 @@ $./run-gdb.sh attach 152
 (gdb) info breakpoints
 (gdb) c		#continue
 (gdb) disable breakpoints
+
+2. 加载load share library
+$adb shell ps|grep surfaceflinger
+system    153   1     56956  5972  ffffffff b6f46bc8 t /system/bin/surfaceflinger
+
+$adb shell cat /proc/153/maps
+b6f91000-b6fbd000 r-xp 00000000 b3:30 1389       /system/lib/libsurfaceflinger.so
+
+##Note: b6f91000就是so的加载地址.
+
+$arm-eabi-objdump -h out/target/product/cp5dug/symbols/system/lib/libsurfaceflinger.so |grep .text
+.text         0000dbf4  0001b388  0001b388  0001b388  2**3
+
+##Note: 0000dbf4是.text 代码段的相对地址
+##b6f91000+0000dbf4=0xb6f9ebf4 即为libsurfaceflinger.so的运行时代码段地址.
+
+#加载libsurfaceflinger符号表
+(gdb)add-symbol-file out/target/product/cp5dug/symbols/system/lib/libsurfaceflinger.so 0xb6f9ebf4 
+
