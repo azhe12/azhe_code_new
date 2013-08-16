@@ -16,6 +16,9 @@ repo_code()
 		z4td|cp5dtg|cp5dug|cp5dtu)
 			repo init -u ssh://10.33.8.6:29419/manifest.git -b htc -m jb-mr0-rel_shep_sprd8825_dsda_sense50.xml; repo sync
 			;;
+		google)
+			repo init -u https://android.googlesource.com/platform/manifest -b android-4.3_r2.1;repo sync
+			;;
 		*)
 			warning "unrecognize project $1"
 			;;
@@ -31,6 +34,9 @@ setup_env()
 		z4td)
 			export HTCFW_ENABLED=true; export HTC_BUILD_STUBS_FLAG=true; source build/envsetup.sh ; partner_setup z4td Z4TD_Generic_WWE_DEBUG
 			;;
+		google)
+			source build/env_setup.sh ;lunch full-eng
+			;;
 		*)
 			warning "unrecognize project $1"
 			;;
@@ -40,10 +46,13 @@ build()
 {
 	case $1 in
 			cp5dug)
-				. setup_env cp5dug;make -j4 PRODUCT-cp5dug-userdebug
+				source setup_env cp5dug;make -j4 PRODUCT-cp5dug-userdebug
 				;;
 			z4td)
-				. setup_env z4td;make -j4 PRODUCT-z4td-userdebug
+				source setup_env z4td;make -j4 PRODUCT-z4td-userdebug
+				;;
+			google)
+				source setup_env google;make -j4
 				;;
 			*)
 				warning "unrecognize project $1"
