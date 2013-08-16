@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<rt5501>
+	<mode desc="init">
+		<id>00</id>
+	</mode>
+	<mode desc="mute">
+		<id>01</id>
+		<register> <!--azhe-->
+			<addr>0x01</addr>
+			<value>0xc7</value>
+		</register>
+		<register> <!--azhe-->
+		</register>
+	</mode>
+</rt5501>

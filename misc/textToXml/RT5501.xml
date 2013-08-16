@@ -1,0 +1,720 @@
+<?xml version="1.0" ?>
+<rt5501>
+<!--#RT5501_CSN_20130319-->
+<!--#00 init-->
+<!--#01 mute-->
+<!--#02 off-->
+<!--#03 playback-->
+<!--#04 playback_8_ohm-->
+<!--#05 playback_16_ohm-->
+<!--#06 playback_32_ohm-->
+<!--#07 playback_64_ohm-->
+<!--#08 playback_128_ohm-->
+<!--#09 playback_256_ohm-->
+<!--#10 playback_500_ohm-->
+<!--#11 playback_1k_ohm-->
+<!--#12 voice-->
+<!--#13 TTY-->
+<!--#14 FM-->
+<!--#15 Ring-->
+<!--#16 MFG-->
+<!--#17 Beats Effect ON, 8~64ohm-->
+<!--#18 Beats Effect ON, 128~500ohm-->
+<!--#19 Mono HS, Beats OFF-->
+<!--#20 Mono HS, Beats ON-->
+
+<!--#init-->
+	<mode>
+		<id>00</id>
+<!--#0x00, 0xC0,-->
+<!--#0x81, 0x30,# note-->
+<!--#0x87, 0xE6,#-->
+<!--#0x90, 0xD0,# new for C.-->
+<!--#0x93, 0x9D,# modify for C.-->
+<!--#0x95, 0x7B,# modify for C.-->
+<!--#0xA4, 0x01,# modify for C.-->
+<!--#0x96, 0xAE,#-->
+<!--#0x97, 0x11,# modify for C.-->
+<!--#0x98, 0x22,# new for C.-->
+<!--#0x99, 0x33,# modify for C.-->
+<!--#0x9A, 0x55,# new for C.-->
+<!--#0x9B, 0x66,# modify for C.-->
+<!--#0x9C, 0x99,# new for C.-->
+<!--#0x9D, 0x66,# modify for C.-->
+<!--#0x9E, 0x99,# new for C.-->
+	</mode>
+
+<!--#mute-->
+	<mode>
+		<id>01</id>
+		<register>
+			<addr>0x01</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+
+<!--#off-->
+	<mode>
+		<id>02</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0x1</value>
+		</register>
+	</mode>
+
+<!--#playback-->
+	<mode>
+		<id>03</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -7dB-->
+			<addr>0x01</addr>
+			<value>0x15</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_8_ohm-->
+	<mode>
+		<id>04</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -7dB-->
+			<addr>0x01</addr>
+			<value>0x15</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_16_ohm-->
+	<mode>
+		<id>05 </id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -7dB-->
+			<addr>0x01</addr>
+			<value>0x15</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_32_ohm-->
+	<mode>
+		<id>06</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -7dB-->
+			<addr>0x01</addr>
+			<value>0x15</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_64_ohm-->
+	<mode>
+		<id>07</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -7dB-->
+			<addr>0x01</addr>
+			<value>0x15</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_128_ohm-->
+	<mode>
+		<id>08</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -2dB-->
+			<addr>0x01</addr>
+			<value>0x1A</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_256_ohm-->
+	<mode>
+		<id>09</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -2dB-->
+			<addr>0x01</addr>
+			<value>0x1A</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_500_ohm-->
+	<mode>
+		<id>10</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -2dB-->
+			<addr>0x01</addr>
+			<value>0x1A</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_1k_ohm-->
+	<mode>
+		<id>11</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -6dB-->
+			<addr>0x01</addr>
+			<value>0x16</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#voice-->
+	<mode>
+		<id>12</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain 0dB-->
+			<addr>0x01</addr>
+			<value>0x1C</value>
+		</register>
+		<register><!--noise gate off-->
+			<addr>0x02</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+<!--#TTY-->
+	<mode>
+		<id>13</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain 0dB-->
+			<addr>0x01</addr>
+			<value>0x1C</value>
+		</register>
+		<register><!--noise gate off-->
+			<addr>0x02</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+<!--#FM-->
+	<mode>
+		<id>14</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain 0dB-->
+			<addr>0x01</addr>
+			<value>0x1C</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x81</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+<!--#Ring-->
+	<mode>
+		<id>15</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -7dB-->
+			<addr>0x01</addr>
+			<value>0x15</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x81</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+<!--#MFG-->
+	<mode>
+		<id>16</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain 0dB-->
+			<addr>0x01</addr>
+			<value>0x1C</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+<!--#playback_8~64_ohm, Beats ON-->
+	<mode>
+		<id>17</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain -1dB-->
+			<addr>0x01</addr>
+			<value>0x1B</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#playback_128~500_ohm, Beats ON-->
+	<mode>
+		<id>18</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0xC0</value>
+		</register>
+		<register><!--gain 0dB-->
+			<addr>0x01</addr>
+			<value>0x1C</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x02</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x37</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x02</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x03</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xCF</value>
+		</register>
+	</mode>
+
+<!--#Mono HS, Beats OFF-->
+	<mode>
+		<id>19</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--gain -6dB-->
+			<addr>0x01</addr>
+			<value>0x16</value>
+		</register>
+		<register><!--noise gate off-->
+			<addr>0x02</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+<!--#Mono HS, Beats ON-->
+	<mode>
+		<id>20</id>
+		<register>
+			<addr>0x00</addr>
+			<value>0x80</value>
+		</register>
+		<register><!--gain 6dB-->
+			<addr>0x01</addr>
+			<value>0x22</value>
+		</register>
+		<register><!--noise gate off-->
+			<addr>0x02</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise gate on-->
+			<addr>0x08</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x07</addr>
+			<value>0x7F</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x09</addr>
+			<value>0x01</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0A</addr>
+			<value>0x00</value>
+		</register>
+		<register><!--noise get setting-->
+			<addr>0x0B</addr>
+			<value>0xC7</value>
+		</register>
+	</mode>
+
+</rt5501>
