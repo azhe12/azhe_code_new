@@ -37,6 +37,12 @@ if [ $flag_sshfs = 1 ];then
 			sudo sshfs -o cache=yes,allow_other display@10.33.138.156:/home/display /home/azhe/share/display/
 			set +x
 			;;
+		azhe_htc)
+			echo "sshfs connect: azhe-htc"
+			set -x
+			sudo sshfs -o cache=yes,allow_other azhe@10.33.137.177:/home/azhe /home/azhe/share/azhe_htc
+			set +x
+			;;
 		*)
 			echo "unrecognize client $CLIENT" 1>&2
 			exit 1
@@ -48,6 +54,12 @@ else #ssh
 			echo "ssh connect: display"
 			set -x
 			ssh display@10.33.138.156
+			set +x
+			;;
+		azhe_htc)
+			echo "ssh connect: azhe_htc"
+			set -x
+			ssh azhe@10.33.137.177
 			set +x
 			;;
 		*)
