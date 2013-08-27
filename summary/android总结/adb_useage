@@ -1,7 +1,0 @@
-$sudo adb devices	''start adb-server and list devices
-$adb logcat	''android log
-$adb shell cat /proc/kmsg	''kernel log
-$adb shell	''to enter shell
-$adb push	''adb push xxx /sdcard/
-$adb pull	''adb pull /sdcard/xxx ./
-$adb kill-server	''close adb server	
