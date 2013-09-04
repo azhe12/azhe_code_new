@@ -32,6 +32,12 @@ setup_env()
 		cp5dug)
 			export HTCFW_ENABLED=true; export HTC_BUILD_STUBS_FLAG=true; source build/envsetup.sh ; partner_setup cp5dug CP5DUG_Generic_WWE_DEBUG 
 			;;
+		cp5dtu)
+			export HTCFW_ENABLED=true; export HTC_BUILD_STUBS_FLAG=true; source build/envsetup.sh ; partner_setup cp5dtu CP5DTU_Generic_WWE_DEBUG
+			;;
+		cp5dwg)
+			export HTCFW_ENABLED=true; export HTC_BUILD_STUBS_FLAG=true; source build/envsetup.sh ; partner_setup cp5dwg CP5DWG_Generic_WWE_DEBUG
+			;;
 		z4td)
 			export HTCFW_ENABLED=true; export HTC_BUILD_STUBS_FLAG=true; source build/envsetup.sh ; partner_setup z4td Z4TD_Generic_WWE_DEBUG
 			;;
@@ -48,6 +54,12 @@ build()
 	case $1 in
 			cp5dug)
 				setup_env cp5dug;make -j4 PRODUCT-cp5dug-userdebug
+				;;
+			cp5dtu)
+				setup_env cp5dtu;make -j4 PRODUCT-cp5dtu-userdebug
+				;;
+			cp5dwg)
+				setup_env cp5dwg;make -j4 PRODUCT-cp5dwg-userdebug
 				;;
 			z4td)
 				setup_env z4td;make -j4 PRODUCT-z4td-userdebug
