@@ -1,7 +1,8 @@
 #!/bin/bash
+#usage: systraceMe.sh [time|outputfile]
 SYSTRACE_PATH=/home/azhe/Downloads/adt-bundle-linux-x86_64-20130219/sdk/tools/systrace
-TIME=$1
-OUT_FILE=$2
+TIME=${1:-15}
+OUT_FILE=${2:-systrace.html}
 set -x
 python $SYSTRACE_PATH/systrace.py --set-tags gfx,view,wm
 #echo "python $SYSTRACE_PATH/systrace.py --set-tags gfx,view,wm"
