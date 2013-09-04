@@ -1,6 +1,0 @@
-1.从ITS获得CL#xxxx,下载log file.
-2.在dashboard下载相应ROM   和  比CL小，但是最接近的  vmlinux。
-3.从p4v中的kernel_info找到小于ROM CL，但是最接近的kernel number. 记下相应commit号,但次commit号不完整。
-4.$git log //找到相应kernel commit
-$git reset --hard XXXX
-
