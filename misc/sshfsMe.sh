@@ -13,8 +13,15 @@ do
 			flag_sshfs=1
 			flag_ssh=0
 			;;
+		--ip)
+			shift
+			if [ -z "$1" ];then
+				echo "Please enter ip address" && exit 1
+			fi
+			client_ip=$1
+			;;
 		-*)
-			echo "unreconize ssh client" 1>&2
+			echo "unreconize option" 1>&2
 			usage
 			exit 1
 			;;
@@ -34,13 +41,19 @@ if [ $flag_sshfs = 1 ];then
 		display)
 			echo "sshfs connect: display"
 			set -x
-			sudo sshfs -o cache=yes,allow_other display@10.33.138.156:/home/display /home/azhe/share/display/
+			sudo sshfs -o cache=yes,allow_other display@${client_ip:-10.33.138.156}:/home/display /home/azhe/share/display/
 			set +x
 			;;
 		azhe_htc)
 			echo "sshfs connect: azhe-htc"
 			set -x
-			sudo sshfs -o cache=yes,allow_other azhe@10.33.137.177:/home/azhe /home/azhe/share/azhe_htc
+			sudo sshfs -o cache=yes,allow_other azhe@${client_ip:-10.33.137.177}:/home/azhe /home/azhe/share/azhe_htc
+			set +x
+			;;
+		azhe_laptop)
+			echo "sshfs connect: $CLIENT"
+			set -x
+			sudo sshfs -o cache=yes,allow_other azhe@${client_ip:-10.33.219.14}:/home/azhe /home/azhe/share/azhe_laptop
 			set +x
 			;;
 		*)
