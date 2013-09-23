@@ -1,25 +1,57 @@
+/*merge sort
+ * azhe liu 2013.9.22
+ * Read source file from STDIN
+ * Output sorted data to STDOUT
+ * Usage: cat sourcefile | ./mergeSort
+ *
+ * */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-void mergeSortedNumber(unsigned int * a_left, unsigned int size_left, \
-		unsigned int * a_right, unsigned int size_right, unsigned int * result)
+#define ARRAY_SIZE	10000000
+void mergeSortedNumber(unsigned int * a, unsigned int first, unsigned int mid, unsigned int end, unsigned int *tmp)
 {
-	unsigned int i = 0, j = 0, k = 0;
-	while (i < size_left && j < size_right) {
-		if (a_left[i] <= a_right[j])
-			result[k++] = a_left[i++];
+	//unsigned int * tmp = malloc(ARRAY_SIZE * sizeof(int));
+	unsigned int i = first, j = mid + 1, k = 0;
+	while ((i <= mid ) && (j <= end )) {
+		if (a[i] <= a[j])
+			tmp[k++] = a[i++];
 		else
-			result[k++] = a_right[j++];
+			tmp[k++] = a[j++];
 	}
-	if (i >= size_left)
-		while (j < size_right)
-			result[k++] = a_right[j++];
-	else if (j >= size_right)
-		while (i < size_left)
-			result[k++] = a_left[i++];
+		while (i <= mid)
+			tmp[k++] = a[i++];
+		while (j <= end)
+			tmp[k++] = a[j++];
+	for (i = 0; i < k; i++) {
+		a[first + i] = tmp[i];
+		printf("%d\n", tmp[i]);
+	}
+	printf(">>>>\n");
 }
 
-#define ARRAY_SIZE	10000000
+void mergesort(unsigned int *a, unsigned int bottom, unsigned int top, unsigned int* tmp)
+{
+	unsigned int mid;
+	if (top > bottom) {
+		mid = (bottom + top) / 2;
+		mergesort(a, bottom, mid, tmp);
+		mergesort(a, mid + 1, top, tmp);
+		//mergeSortedNumber(a + bottom, mid - bottom + 1, a + mid + 1, top - mid, tmp);
+		mergeSortedNumber(a, bottom, mid, top, tmp);
+	}
+}
+
+void MergeSort(unsigned int* a, unsigned int size)
+{
+	unsigned int * tmp;
+	if ( !(tmp = malloc(ARRAY_SIZE * sizeof(int)))) {
+		printf("no memory!\n");
+		return;
+	}
+	mergesort(a, 0, size - 1, tmp);
+	free(tmp);
+}
 int main(int argc, char** argv)
 {
 	unsigned int n, i = 0;
@@ -28,6 +60,8 @@ int main(int argc, char** argv)
 		a[i++] = n;
 		printf("input num = %d\n", a[i - 1]);
 	}
-
+	//mergeSortedNumber(a, 0, 2, 5);
+	//mergeSort(a, );
+	MergeSort(a, i);
 	free(a);
 }

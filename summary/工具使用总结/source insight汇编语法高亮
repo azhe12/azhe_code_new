@@ -1,2 +1,0 @@
-解决方法是在Options->Document Options里面，点左上的Document Type下拉菜单，选择x86 Asm Source File，然后在右边的File filter里*.asm;*.inc;的后面加上*.s;*.S 接着CLOSE就可以了。这样就可以ADD TREE时把这些汇编加到PROJECT里面。iWd平坦软件园
-      至于要让汇编高亮显示和索引查找，解决方法是在Options->Document Options里面，点左上的Document Type下拉菜单，选择C Source File，然后在右边的File filter里补上*.s,*.S就可以像看C一样看汇编。

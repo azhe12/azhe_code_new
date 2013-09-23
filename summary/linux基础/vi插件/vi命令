@@ -1,8 +1,0 @@
-f - 定义
-e - 返回
-t - 调用他的函数
-C-a 相关引用
-C-\-f  查文件
-C-\-e  egrep全问查找
-cs f e HELLO WORLD
-

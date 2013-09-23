@@ -1,8 +1,0 @@
-法一:
-$cp arch/arm/configs/htc_pyd-td_defconfig .config
-$make ARCH=arm CROSS_COMPILE=arm-eabi- menuconfig
-$make ARCH=arm CROSS_COMPILE=arm-eabi- -j4
-
-法二:
-$make ARCH=arm CROSS_COMPILE=arm-eabi- htc_pyd-td_defconfig
-$make ARCH=arm CROSS_COMPILE=arm-eabi- -j4

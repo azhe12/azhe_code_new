@@ -1,4 +1,0 @@
-$?=1
-while [ $? -ne 0 ] ; do
-	repo sync $@  
-done
