@@ -21,12 +21,11 @@ int main(int argc, char** argv)
 	char line[1024];
 	int i, j, n, m, phoneNum;
 	memset(line, 0, sizeof(line));
-#if 1
 	if (argv[1] == NULL) {
 		printf("arg1 must filename!\n");
 		return -1;
 	}
-#endif
+
 	filename = argv[1];
 	if ((fp = fopen(filename, "r")) == NULL) {
 		printf("open file error\n");

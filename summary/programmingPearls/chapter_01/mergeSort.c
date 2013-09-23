@@ -9,6 +9,12 @@
 #include <string.h>
 #include <stdlib.h>
 #define ARRAY_SIZE	10000000
+#ifdef DEBUG
+	#define pr_debug(...) printf(...)
+#else
+	#define pr_debug(...)
+#endif
+
 void mergeSortedNumber(unsigned int * a, unsigned int first, unsigned int mid, unsigned int end, unsigned int *tmp)
 {
 	//unsigned int * tmp = malloc(ARRAY_SIZE * sizeof(int));
@@ -25,9 +31,9 @@ void mergeSortedNumber(unsigned int * a, unsigned int first, unsigned int mid, u
 			tmp[k++] = a[j++];
 	for (i = 0; i < k; i++) {
 		a[first + i] = tmp[i];
-		printf("%d\n", tmp[i]);
+		pr_debug("%d\n", tmp[i]);
 	}
-	printf(">>>>\n");
+	pr_debug(">>>>\n");
 }
 
 void mergesort(unsigned int *a, unsigned int bottom, unsigned int top, unsigned int* tmp)
@@ -54,14 +60,15 @@ void MergeSort(unsigned int* a, unsigned int size)
 }
 int main(int argc, char** argv)
 {
-	unsigned int n, i = 0;
+	unsigned int n, i = 0, size;
 	unsigned int *a = malloc(sizeof(int) * ARRAY_SIZE);
 	while(scanf("%d", &n) != EOF) {
 		a[i++] = n;
-		printf("input num = %d\n", a[i - 1]);
+		pr_debug("input num = %d\n", a[i - 1]);
 	}
-	//mergeSortedNumber(a, 0, 2, 5);
-	//mergeSort(a, );
-	MergeSort(a, i);
+	size = i;
+	MergeSort(a, size);
+	for (i = 0; i < size; i++)
+		printf("%d\n", a[i]);
 	free(a);
 }
