@@ -1,5 +1,5 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_cnt =8
 let g:netrw_dirhist_1='/home/azhe/work/android/z4_latest_shep/frameworks/base'
 let g:netrw_dirhist_2='/home/azhe/work/android/z4_latest_shep/frameworks/base/cmds'
 let g:netrw_dirhist_3='/home/azhe/work/android/z4_latest_shep/frameworks/base/cmds/screencap'
@@ -7,3 +7,4 @@ let g:netrw_dirhist_4='/home/azhe/share/d_win7/azhe_code/misc'
 let g:netrw_dirhist_5='/home/azhe/work/android/z4_latest_shep/frameworks/native/services/surfaceflinger'
 let g:netrw_dirhist_6='/home/azhe/work/android/z4_latest_shep/kernel/arch/arm/mach-sc'
 let g:netrw_dirhist_7='/home/azhe/work/android/z4_latest_shep/kernel/drivers/video/sc8830'
+let g:netrw_dirhist_8='/etc/ld.so.conf.d'
