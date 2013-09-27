@@ -7,8 +7,41 @@
  * */
 
 #include <stdio.h>
+typedef unsigned int uint32;
 
-int findNoExisitNumber(FILE *fp, int max, int* result)
+int findNoExisitNumber(FILE *fp, int max, uint32* result)
+{
+	int i = 0, max_shift;
+	char cwd[MAXPATH];
+	char filename[MAXPATH];
+	FILE * fp_a, fp_b, fp_c;
+	getpwd(cwd, MAXPATH);
+	/*file a*/
+	snprintf(filename, MAXPATH, "%s/a.%d", cwd, getpid());
+	if (! (fp_a = fopen(filename, "rw+"))) {
+		printf("open %s failed!\n", filename);
+		return -1;
+	}
+	memset(filename, 0, sizeof(filename));
+	/*file b*/
+	snprintf(filename, MAXPATH, "%s/b.%d", cwd, getpid());
+	if (! (fp_b = fopen(filename, "rw+"))) {
+		printf("open %s failed!\n", filename);
+		return -1;
+	}
+	memset(filename, 0, sizeof(filename));
+	/*file c*/
+	snprintf(filename, MAXPATH, "%s/c.%d", cwd, getpid());
+	if (! (fp_b = fopen(filename, "rw+"))) {
+		printf("open %s failed!\n", filename);
+		return -1;
+	}
+	memset(filename, 0, sizeof(filename));
+
+	while (!(max & (1 << i))) i--;
+	max_shift = i;
+		
+}
 int main(int argc, char** argv)
 {
 	//int a[100] = {0, 1, 2, 3,4, 5, 7};
@@ -19,12 +52,13 @@ int main(int argc, char** argv)
 		printf("need two argument!\n");
 		return -1;
 	}
-	if (!(fp = fopen(argv[1], "rw"))) {
+	if (!(fp = fopen(argv[1], "r"))) {
 		printf("can't open %s \n", argv[1]);
 		return -2;
 	}
 	max = atoi(argv[2]);
-	
+
+
 	if (!findNoExisitNumber(fp, max, &result)) {
 		printf("can't find not-exisit number!\n");
 		fclose(fp);
