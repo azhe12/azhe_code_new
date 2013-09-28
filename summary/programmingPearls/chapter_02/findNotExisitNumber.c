@@ -9,38 +9,60 @@
 #include <stdio.h>
 typedef unsigned int uint32;
 
-int findNoExisitNumber(FILE *fp, int max, uint32* result)
+int test(uint32 num, int shift) {return num & (1 << shift);}
+int FEN(FILE* fp_src, FILE* fp_left, FILE* fp_right, FILE* fp_tmp, int max_shift, uint32* result)
+{
+	uint32 num, i, j;
+
+	char line[12];
+	while (1) {
+		fgets(line, sizeof(line), fp_src);
+		if (feof(fp)) break;
+		num = atoi(line);
+	
+		if (test(num, max_shift)) {
+			
+		}
+	}
+}
+
+int findNoExisitNumber(FILE *fp, uint32 max, uint32* result)
 {
 	int i = 0, max_shift;
 	char cwd[MAXPATH];
 	char filename[MAXPATH];
-	FILE * fp_a, fp_b, fp_c;
+	FILE * fp_left, fp_right, fp_tmp;
 	getpwd(cwd, MAXPATH);
-	/*file a*/
-	snprintf(filename, MAXPATH, "%s/a.%d", cwd, getpid());
+	/*file left*/
+	snprintf(filename, MAXPATH, "%s/left.%d", cwd, getpid());
 	if (! (fp_a = fopen(filename, "rw+"))) {
 		printf("open %s failed!\n", filename);
 		return -1;
 	}
 	memset(filename, 0, sizeof(filename));
-	/*file b*/
-	snprintf(filename, MAXPATH, "%s/b.%d", cwd, getpid());
-	if (! (fp_b = fopen(filename, "rw+"))) {
+	/*file right*/
+	snprintf(filename, MAXPATH, "%s/right.%d", cwd, getpid());
+	if (! (fp_right = fopen(filename, "rw+"))) {
 		printf("open %s failed!\n", filename);
 		return -1;
 	}
 	memset(filename, 0, sizeof(filename));
-	/*file c*/
-	snprintf(filename, MAXPATH, "%s/c.%d", cwd, getpid());
-	if (! (fp_b = fopen(filename, "rw+"))) {
+	/*file tmp*/
+	snprintf(filename, MAXPATH, "%s/tmp.%d", cwd, getpid());
+	if (! (fp_tmp = fopen(filename, "rw+"))) {
 		printf("open %s failed!\n", filename);
 		return -1;
 	}
 	memset(filename, 0, sizeof(filename));
-
+	
+	/*max_shift*/
 	while (!(max & (1 << i))) i--;
 	max_shift = i;
-		
+	
+	if (FEN(fp, fp_left, fp_right, fp_tmp, max_shift, result))
+		return 0;
+	else
+		return -1;
 }
 int main(int argc, char** argv)
 {
