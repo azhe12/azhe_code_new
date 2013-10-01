@@ -7,6 +7,7 @@
  * */
 
 #include <stdio.h>
+#include <string.h>
 typedef unsigned int uint32;
 
 int test(uint32 num, int shift) {return num & (1 << shift);}
@@ -15,15 +16,27 @@ int FEN(FILE* fp_src, FILE* fp_left, FILE* fp_right, FILE* fp_tmp, int max_shift
 	uint32 num, i, j;
 
 	char line[12];
+	/*clean up file*/
+	clean_file(fp_left);
+	clean_file(fp_right);
+	clean_file(fp_tmp);
+
 	while (1) {
 		fgets(line, sizeof(line), fp_src);
 		if (feof(fp)) break;
 		num = atoi(line);
 	
 		if (test(num, max_shift)) {
-			
+			fwrite(&num, sizeof(uint32), 1, fp_left);
+			i++;
+		} else {
+			fwrite(&num, sizeof(uint32), 1, fp_right);
+			j++;
 		}
 	}
+	if (i <= j && i < (1 << (max_shift))) {
+		FEN(fp_left, fp_right, fp_tmp, fp_left);
+	} else if ()
 }
 
 int findNoExisitNumber(FILE *fp, uint32 max, uint32* result)
