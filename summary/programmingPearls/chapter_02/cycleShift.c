@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 	while (k < input_nums) {
 		if (i == 0)
 			t = a[start];
-		left = start + i * shift;
+		left = (start + i * shift) % input_nums;
 		right = (left + shift) % input_nums;
 		/*cycle shift*/
 		if (right == start) {
@@ -46,8 +46,10 @@ int main(int argc, char **argv)
 			a[left] = a[right];
 			i++;
 		}
+		printf("a[%u] = %u\n", left, a[left]);
 		k++;
 	}
+	printf("*****\n");
 	for (i = 0; i < input_nums; i++)
 		printf("a[%d]= %u\n", i, a[i]);
 	return 0;
