@@ -12,9 +12,9 @@
 #include <unistd.h>
 #include <baseLib.h>
 
-typedef unsigned int uint32;
+//#define DEBUG
 #define MAX_PATH	256
-int test(uint32 num, int shift) {return num & (1 << shift);}
+int test(int num, int shift) {return num & (1 << shift);}
 
 int clean_file(char* filename)
 {
@@ -23,9 +23,9 @@ int clean_file(char* filename)
 	fclose(fp);
 }
 #if 0
-int FEN(FILE* fp_src, FILE* fp_left, FILE* fp_right, FILE* fp_tmp, int max_shift, uint32* result)
+int FEN(FILE* fp_src, FILE* fp_left, FILE* fp_right, FILE* fp_tmp, int max_shift, int* result)
 {
-	uint32 num, i, j;
+	int num, i, j;
 
 	char line[12];
 	/*clean up file*/
@@ -39,10 +39,10 @@ int FEN(FILE* fp_src, FILE* fp_left, FILE* fp_right, FILE* fp_tmp, int max_shift
 		num = atoi(line);
 	
 		if (test(num, max_shift)) {
-			fwrite(&num, sizeof(uint32), 1, fp_left);
+			fwrite(&num, sizeof(int), 1, fp_left);
 			i++;
 		} else {
-			fwrite(&num, sizeof(uint32), 1, fp_right);
+			fwrite(&num, sizeof(int), 1, fp_right);
 			j++;
 		}
 	}
@@ -51,49 +51,65 @@ int FEN(FILE* fp_src, FILE* fp_left, FILE* fp_right, FILE* fp_tmp, int max_shift
 	} else if ()
 }
 #endif
-uint32 read_first_num_from_file(FILE* fp)
+int read_first_num_from_file(char* filename)
 {
 	char line[12];
+	FILE* fp;
+	if ((fp = fopen(filename, "r")) == NULL) {
+		printf("open %s failed!\n", filename);
+		return -1;
+	}
+	memset(line, 0, sizeof(line));
 	fgets(line, sizeof(line), fp);
+	fclose(fp);
 	return atoi(line);
 }
 
-int FNE(char* file_src, char* file_left, char* file_right, char* file_tmp, int max_shift, uint32* result)
+int FNE(char* file_src, char* file_left, char* file_right, char* file_tmp, int max_shift, int* result)
 {
-	char line[12];
-	uint32 num, i, j;
+	char line[12], num_char[11];
+	int num = 0, i = 0, j = 0;
 	FILE* fp_src, *fp_l, * fp_r;
-	//clean_file(file_left);
-	//clean_file(file_right);
+	static int n = 0;
 
+	/*clean left and right file*/
+	clean_file(file_left);
+	clean_file(file_right);
+
+	printf("%s %s %s %s\n", file_src, file_left, file_right, file_tmp);
 	/*open src file*/
 	if ((fp_src = fopen(file_src, "r")) == NULL) {
 		printf("open %s failed!\n", file_src);
 		return -1;
 	}
-	/*clean and write left*/
-	if ((fp_l = fopen(file_left, "w")) == NULL) {
+	/*open left*/
+	if ((fp_l = fopen(file_left, "wa+")) == NULL) {
 		printf("open %s failed!\n", file_left);
 		goto open_file_left_failed;
 		return -1;
 	}
-	/*clean and write right*/
-	if ((fp_r = fopen(file_right, "w")) == NULL) {
+	/*open right*/
+	if ((fp_r = fopen(file_right, "wa+")) == NULL) {
 		printf("open %s failed!\n", file_right);
 		goto open_file_right_failed;
 	}
 
 	while (1) {
 		memset(line, 0, sizeof(line));
+		memset(num_char, 0, sizeof(num_char));
+		/*read  line*/
 		fgets(line, sizeof(line), fp_src);
 		if (feof(fp_src)) break;
 		num = atoi(line);
-
-		if (test(num, max_shift)) {
-			fwrite(line, sizeof(line), 1, fp_l);
+		sprintf(num_char, "%u", num);
+		num_char[10] = '\n';
+		if (!test(num, max_shift)) {
+			//fwrite(line, sizeof(line) - 2, 1, fp_l);
+			fwrite(num_char, sizeof(num_char), 1, fp_l);
 			i++;
 		} else {
-			fwrite(line, sizeof(line), 1, fp_r);
+			//fwrite(line, sizeof(line) - 2, 1, fp_r);
+			fwrite(num_char, sizeof(num_char), 1, fp_r);
 			j++;
 		}
 	}
@@ -102,21 +118,28 @@ int FNE(char* file_src, char* file_left, char* file_right, char* file_tmp, int m
 		goto cannot_find;
 	}
 
-	printf("i= %08u, j= %08u, max_shift= %d\n", i, j, max_shift);
-	if (i == 0) {
-		*result = read_first_num_from_file(fp_r) - (1 << max_shift);
-		return 0;
-	} else if (j == 0){
-		*result = read_first_num_from_file(fp_l) + (1 << max_shift);
-		return 0;
-	}
-	
 	/*close left right file*/
 	fclose(fp_r);
 	fclose(fp_l);
 	fclose(fp_src);
+
+	printf("i= %08u, j= %08u, max_shift= %d\n", i, j, max_shift);
+	if (i == 0) {
+		*result = read_first_num_from_file(file_right) - (1 << max_shift);
+		return 0;
+	} else if (j == 0){
+		*result = read_first_num_from_file(file_left) + (1 << max_shift);
+		return 0;
+	}
+	
+	
+#ifdef DEBUG
+	n++;
+	if (n == 1)
+		return 0;
+#endif
 	/*clean file temp*/
-	clean_file(file_tmp);
+	//clean_file(file_tmp);
 	/*search in i*/
 	if (i <= j)
 		return FNE(file_left, file_right, file_tmp, file_left, max_shift - 1, result);
@@ -131,13 +154,13 @@ open_file_left_failed:
 	return -1;
 }
 
-int findNoExisitNumber(char* file_src, uint32 max, uint32* result)
+int findNoExisitNumber(char* file_src, int max, int* result)
 {
-	int i = 0, max_shift;
+	int i = 31, max_shift;
 	char cwd[MAX_PATH];
 	char file_l[MAX_PATH], file_r[MAX_PATH], file_t[MAX_PATH];
 	FILE * fp_left, fp_right, fp_tmp;
-	getpwd(cwd, MAX_PATH);
+	getcwd(cwd, MAX_PATH);
 	memset(file_l, 0, sizeof(file_l));
 	memset(file_r, 0, sizeof(file_r));
 	memset(file_t, 0, sizeof(file_t));
@@ -160,7 +183,7 @@ int findNoExisitNumber(char* file_src, uint32 max, uint32* result)
 int main(int argc, char** argv)
 {
 	//int a[100] = {0, 1, 2, 3,4, 5, 7};
-	int max, result;
+	int max, result = 0;
 	FILE* fp;
 	char filepath[100];
 	if (!argv[1] || !argv[2]) {
@@ -174,7 +197,6 @@ int main(int argc, char** argv)
 	}
 #endif
 	max = atoi(argv[2]);
-
 
 	if (!findNoExisitNumber(argv[1], max, &result)) {
 		printf("can't find not-exisit number!\n");
