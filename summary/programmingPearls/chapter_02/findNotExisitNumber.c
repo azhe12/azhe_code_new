@@ -12,7 +12,6 @@
 #include <unistd.h>
 #include <baseLib.h>
 
-//#define DEBUG
 #define MAX_PATH	256
 int test(int num, int shift) {return num & (1 << shift);}
 
@@ -22,35 +21,7 @@ int clean_file(char* filename)
 	fp = fopen(filename, "w");
 	fclose(fp);
 }
-#if 0
-int FEN(FILE* fp_src, FILE* fp_left, FILE* fp_right, FILE* fp_tmp, int max_shift, int* result)
-{
-	int num, i, j;
 
-	char line[12];
-	/*clean up file*/
-	clean_file(fp_left);
-	clean_file(fp_right);
-	clean_file(fp_tmp);
-
-	while (1) {
-		fgets(line, sizeof(line), fp_src);
-		if (feof(fp)) break;
-		num = atoi(line);
-	
-		if (test(num, max_shift)) {
-			fwrite(&num, sizeof(int), 1, fp_left);
-			i++;
-		} else {
-			fwrite(&num, sizeof(int), 1, fp_right);
-			j++;
-		}
-	}
-	if (i <= j && i < (1 << (max_shift))) {
-		FEN(fp_left, fp_right, fp_tmp, fp_left);
-	} else if ()
-}
-#endif
 int read_first_num_from_file(char* filename)
 {
 	char line[12];
@@ -80,13 +51,14 @@ int FNE(char* file_src, char* file_left, char* file_right, char* file_tmp, int m
 	/*open src file*/
 	if ((fp_src = fopen(file_src, "r")) == NULL) {
 		printf("open %s failed!\n", file_src);
+		remove(file_left);
+		remove(file_right);
 		return -1;
 	}
 	/*open left*/
 	if ((fp_l = fopen(file_left, "wa+")) == NULL) {
 		printf("open %s failed!\n", file_left);
 		goto open_file_left_failed;
-		return -1;
 	}
 	/*open right*/
 	if ((fp_r = fopen(file_right, "wa+")) == NULL) {
@@ -126,18 +98,20 @@ int FNE(char* file_src, char* file_left, char* file_right, char* file_tmp, int m
 	printf("i= %08u, j= %08u, max_shift= %d\n", i, j, max_shift);
 	if (i == 0) {
 		*result = read_first_num_from_file(file_right) - (1 << max_shift);
+		remove(file_left);
+		remove(file_right);
+		remove(file_tmp);
+
 		return 0;
 	} else if (j == 0){
 		*result = read_first_num_from_file(file_left) + (1 << max_shift);
+
+		remove(file_left);
+		remove(file_right);
+		remove(file_tmp);
 		return 0;
 	}
 	
-	
-#ifdef DEBUG
-	n++;
-	if (n == 1)
-		return 0;
-#endif
 	/*clean file temp*/
 	//clean_file(file_tmp);
 	/*search in i*/
@@ -147,8 +121,11 @@ int FNE(char* file_src, char* file_left, char* file_right, char* file_tmp, int m
 		return FNE(file_right, file_left, file_tmp, file_right, max_shift - 1, result);
 cannot_find:
 	fclose(fp_r);
+	remove(file_right);
 open_file_right_failed:
 	fclose(fp_l);
+	remove(file_left);
+	remove(file_tmp);
 open_file_left_failed:
 	fclose(fp_src);
 	return -1;
@@ -182,7 +159,6 @@ int findNoExisitNumber(char* file_src, int max, int* result)
 
 int main(int argc, char** argv)
 {
-	//int a[100] = {0, 1, 2, 3,4, 5, 7};
 	int max, result = 0;
 	FILE* fp;
 	char filepath[100];
@@ -190,16 +166,11 @@ int main(int argc, char** argv)
 		printf("need two argument!\n");
 		return -1;
 	}
-#if 0
-	if (!(fp = fopen(argv[1], "r"))) {
-		printf("can't open %s \n", argv[1]);
-		return -2;
-	}
-#endif
 	max = atoi(argv[2]);
 
 	if (!findNoExisitNumber(argv[1], max, &result)) {
 		printf("can't find not-exisit number!\n");
+
 		return -3;
 	}
 	printf("find %u\n", result);

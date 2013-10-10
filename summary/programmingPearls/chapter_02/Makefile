@@ -10,5 +10,3 @@ findNotExisitNumber:findNotExisitNumber.o
 
 clean:
 	rm -rf $(OBJ) *.o
-
-#gcc -o cycleShift cycleShift.c -I../baseLib/include -L../baseLib/lib -lbaseLib
