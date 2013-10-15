@@ -1,0 +1,74 @@
+GDB调试笔记
+
+先明确两个概念：host和target
+host: arm-eabi-gdb
+target: gdbserver
+
+例如调试mediaserver
+
+1、使用gdbserver 启动需要调试的程序
+方法有四种
+(1)在init.rc中按照启动服务的方法（参考Android的init.rc语法）
+service media /system/bin/gdbserver :5039 /system/bin/mediaserver
+其中 :5039 表示使用5039号端口
+(2)adb shell中直接启动
+gdbserver :5039 mediaserver
+(3)在代码中直接使用system函数：
+	int pid;
+	char buf[512];
+	pid = getpid();
+	LOGD("pid = %d\n", pid);
+	sprintf(buf, "gdbserver :5039 --attach %d", pid);
+	system(buf);
+(4)先进adb shell
+执行ps取得 mediaserver的pid
+然后执行
+gdbserver :5039 --attach pid
+
+2、host端arm-eabi-gdb
+(1) 重新映射端口5039到usb
+../octagram_tools/adb forward tcp:5039 tcp:5039
+(2) 进arm-eabi-gdb
+prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-gdb
+(3) 与远端链接
+> (gdb) target remote :5039
+(4) 加载符号表
+> (gdb)symbol-file out/target/product/primotd/symbols/system/bin/mediaserver
+Android会在编译时生成带符号表的文件，放在上面的symbols目录下，可以看到这个目录下的结构和 target 端是一致的。
+(5) 之后就可以开始各种调试了
+
+3、动态库调试方法
+(1) 反汇编
+prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-objdump -dS out/target/product/protd/symbols/system/lib/libaudioflinger.so > ../octagram_tools/libaudioflinger_so.disasm
+
+prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-objdump -dS out/target/product/protd/symbols/system/bin/mediaserver > ../octagram_tools/mediaserver.disasm
+
+(2) 确定 .text 段
+prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-objdump -h out/target/product/protd/symbols/system/lib/libaudioflinger.so | grep .text
+(3) 将 so 的符号表加入
+add-symbol-file out/target/product/protd/symbols/system/lib/libaudioflinger.so 0x80020f80
+
+b frameworks/base/services/audioflinger/AudioFlinger.cpp:190
+
+调试下来，问题出在 *
+
+template<typename T>
+sp<T>::sp(const sp<T>& other)
+    : m_ptr(other.m_ptr)
+   3a31c:	6833      	ldr	r3, [r6, #0]
+   3a31e:	6263      	str	r3, [r4, #36]
+{
+    if (m_ptr) m_ptr->incStrong(this);
+   3a320:	2b00      	cmp	r3, #0
+   3a322:	d007      	beq.n	3a334 <_ZN7android22AudioCalibrationThreadC1ERKNS_2spINS_12AudioFlingerEEE+0x44>
+   3a324:	681e      	ldr	r6, [r3, #0]
+   3a326:	1c21      	adds	r1, r4, #0
+   3a328:	3124      	adds	r1, #36
+   3a32a:	3e0c      	subs	r6, #12
+   3a32c:	6835      	ldr	r5, [r6, #0]
+   3a32e:	1958      	adds	r0, r3, r5
+*   3a330:	f7e5 efee 	blx	20310 <offset+0x20190>
+{
+
+
+

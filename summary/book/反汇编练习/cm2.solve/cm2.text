@@ -1,0 +1,156 @@
+Now forgive me for my english, i've been a native english speaker for
+18 years, but i've had a few beers :)
+
+So first things first, we run the executable through ltrace because a lot of the assembly dump was garbage (packed/compressed?). Ahh wonderful, a couple of writes to /tmp/upx******* or whatever - looks like it's compressed using UPX.
+
+<
+ $ upx -d cm2
+>
+
+Next thing I load it up using IDA 4.7 (isn't win4lin wondeful) because this gives me the best suite of tools available for statically analyzing stuff.
+
+If you don't have IDA (or win4lin/vmware) you can use the HT editor (hte.sf.net - very nice tool) or standard GNU objdump.
+
+So we're looking through for string rerences, because everything good and bad seems to be blatently marked as good or bad in the program.
+
+At around 0x0804A02C we get to the string table
+
+<
+.data:0804A071 aBadKeyPBadCrac db 'BAD KEY :P BAD cracker BAD :P',0
+.data:0804A071                                         ; DATA XREF: sub_8048CAD:loc_8048CA1o
+.data:0804A08F aCrackedOhhYeah db 0Ah                  ; DATA XREF: sub_8048CAD+FAo
+.data:0804A08F                 db 'cracked',0Ah
+.data:0804A08F                 db 'ohh yeah !!! you did it :)',0Ah
+.data:0804A08F                 db 'now send me patch and keygen ',0Ah,0
+.data:0804A0D2 aKillThisWindow db 0Ah                  ; DATA XREF: sub_8048970+1Do
+.data:0804A0D2                 db 'Kill this window (patch file) ale patchowac mozesz tlko to o'
+>
+
+As you can see IDA shows us the cross references of all the strings we're interested in.
+
+The first thing we're interested in is the 'Kill this window' window so we jump to the cross reference and see whats happening before and after it's being called.
+
+>
+.text:08048983                 call    _gtk_init			; Initialize GTK
+.text:08048988                 nop					
+.text:08048989                 nop
+.text:0804898A                 nop					; WTF! This doesn't happen in real programs!
+.text:0804898B                 nop
+.text:0804898C                 nop
+.text:0804898D                 mov     esi, offset aKillThisWindow ; "\nKill this window (patch file) ale patc"...
+.text:08048992                 call    sub_8048DF3			; Setup the 'Kill this window' window
+.text:08048997                 push    0
+.text:0804899C                 push    offset sub_80489BD
+.text:080489A1                 push    offset aDestroy ; "destroy"
+.text:080489A6                 push    ds:dword_804A3A0
+.text:080489AC                 call    _gtk_signal_connect		; Setup the destroy (close window) signal
+									; to call 0x804A3A0 when it's closed.
+.text:080489B1                 add     esp, 10h
+.text:080489B7                 call    _gtk_main			; Enter the main GTK event loop
+<
+
+As you can see, it initializes gtk, sets-up the window, pushes the arguments to the signal_connect function which setsup the signal
+thats called when the window is destroyed, then enters the main loop.
+
+What is very suspicous is 5 nops between gtk_init and gtk_signal_connect, this doesn't happen in programs 'in the wild' because the 
+compiler isn't stupid enough to grossly disrespect space like that - so we presume it's got a reason to be there.
+
+So, we ignore the 5 nops for now (bookmark them though) and go on to see what happens when the window is destroyed which leads 
+to the showing of the main crackme window.
+
+It looks like 0x80489BD is the main crackme window
+<
+.text:080489BD sub_80489BD     proc near               ; DATA XREF: sub_8048970+2Co
+.text:080489BD                 push    ebp
+.text:080489BE                 mov     ebp, esp
+.text:080489C0                 sub     esp, 8
+.text:080489C6                 push    1
+.text:080489CB                 call    _gtk_window_new			; Setup the window
+.text:080489D0                 mov     ds:dword_804A39C, eax
+.text:080489D5                 push    offset aQuit    ; "Quit"		; Push button label
+.text:080489DA                 call    _gtk_button_new_with_label	; Add the quit button
+.text:080489DF                 mov     ds:dword_804A3A4, eax		; Save pointer to the new button at 0x804A3A4 (static?)
+.text:080489E4                 push    offset aCrackme ; "CrackMe"
+.text:080489E9                 call    _gtk_button_new_with_label	; Add the crackme button
+.text:080489EE                 mov     ds:dword_804A3A8, eax		; Save pointer to crackme button at 0x804A3A8
+>
+
+Now back to those 5 nops (5 bytes) - thats enough to call a single function - lets try calling the main crackme window!
+
+In those 5 bytes we insert 0xe8 0x30 0x00 0x00 0x00 (call offset_80489bd).
+
+HT has a nice function (sort of like ollydbg) called 'Assemble', i used 'call 0x080489BD' to insert those 5 bytes, or you could do it with a hex editor after working out the correct machinecode.
+
+We then run the program - great it shows up the main crackme window first - thankyou author for making it easy on us with the nops, 
+although you have to realize there will be less space for improvisation in the real world.
+
+- END OF PART 1
+
+So we wanna know what happens when "CrackMe" is clicked ? Further down 0x80489BD (I call it setup_window) we get to the bit
+where it sets-up the GTK signals. (we're looking for 0x804A3A8 again - the location of the crackme button)
+
+<
+.text:08048BF8                 push    0
+.text:08048BFD                 push    offset sub_8048CAD		; Callback function
+.text:08048C02                 push    offset aClicked ; "clicked"	; The event (clicked)
+.text:08048C07                 push    ds:dword_804A3A8			; The crackme button
+.text:08048C0D                 call    _gtk_signal_connect		; Connect the signal to the button :)
+.text:08048C12                 add     esp, 10h				; Pop 10 bytes off the stack (all our arguments) 
+>
+
+So 0x8048CAD is called when the 'CrackMe' button is clicked, now we skim across the function
+
+<
+.text:08048CB6                 push    ds:dword_804A3C4			; Pointer to text box
+.text:08048CBC                 call    _gtk_entry_get_text		; Get text from it
+.text:08048CC1                 mov     edx, eax	
+.text:08048CC3                 call    sub_8048FC5			; After a lil investigation this function seems like strlen
+.text:08048CC8                 cmp     eax, 20h				; Check if it's 32 characters long
+.text:08048CCD                 jnz     short loc_8048CA1		; If it's no - jump to 0x08048CA1
+>
+
+So basicly if the serial isn't 32 characters long - it jumps to 0x08048ca1, which on further inspection looks like an error function:
+
+<
+.text:08048CA1                 mov     esi, offset aBadKeyPBadCrac ; "BAD KEY :P BAD cracker BAD :P"
+.text:08048CA6                 call    sub_8048DF3
+.text:08048CAB                 leave
+.text:08048CAC                 retn
+>
+
+So - it looks pretty simple, we kill all error checking in the key function - and as long as we input something (to avoid unwanted segfaults) it should let us through... So lets try that
+
+<
+ 8048cf1 ! 50                               push    eax 
+ 8048cf2 ! 3d03000000                       cmp     eax, 3
+ 8048cf7 ! 90                               nop
+ 8048cf8 ! 90                               nop
+ 8048cf9 ! 89c1                             mov     ecx, eax
+ 8048cfb !
+ ....... ! loc_8048cfb:                    ;xref j8048d01
+>
+
+That seems to do the trick, all references to 0x08048ca1 were nop'd out and it just sails through the checking routine.
+
+So - the programs cracked, whats the point in making a kyegen for it?
+
+One way we could improve this - is to completely byepass all the checking stuff and just jump to the 'i'm valid' function.
+
+To do this we'd just jump to 0x08048DA7 (where it pushes the first argument to the message box function that says we're valid) 
+as the first instruction of the callback function. So:
+
+<
+ ....... ! offset_8048cad:                 ;xref o8048bfd
+ ....... ! 55                               push    ebp
+ 8048cae ! 89e5                             mov     ebp, esp
+ 8048cb0 ! 81ec08000000                     sub     esp, 8
+ 8048cb6 ! e9ec000000                       jmp     8048da7h		; Jump to the 'im valid' instruction
+ 8048cbb ! 08e8                             or      al, ch		; And now it's gibberish because the old instruction was less bytes
+ 8048cbd ! 2f                               das
+ 8048cbe ! fb                               sti
+ 8048cbf ! ff                               db      0ffh 
+>
+
+And there we have it - it's cracked.
+
+- hope you enjoy this tutorial - regards, DrSpliff
