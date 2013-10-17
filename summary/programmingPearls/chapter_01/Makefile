@@ -3,9 +3,9 @@ CFLAGS:=-I../baseLib/include -L../baseLib/lib -lbaseLib -g
 CPPFLAGS:=-I../baseLib/include -L../baseLib/lib -lbaseLib -g
 .PHONY: all clean
 
-mergeSort_char:mergeSort_char.o
+mergeSort_char:mergeSort_char.cpp
 	g++ -o mergeSort_char mergeSort_char.cpp $(CPPFLAGS)
-b:b.o
+b:b.cpp
 	g++ -o b b.cpp $(CPPFLAGS)
 clean:
 	rm -rf $(OBJ) *.o
