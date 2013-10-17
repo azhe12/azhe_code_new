@@ -1,35 +1,33 @@
-/*
-*azhe_liu 2013-09-23
-*libbase.so for programming pearls
-*/
 #include <iostream>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include "baseLib.h"
 
 using namespace std;
-
-#ifdef DEBUG
-    #define pr_debug(...) printf(...)
-#else
-    #define pr_debug(...)
-#endif
-typedef unsigned int uint32;
-
-/*read num from STDIN to array*/
-int readStdinNumToArray(int* a, int size);
-
-/*binary search using recursion*/
-uint32 BinarySearch(uint32 * a, uint32 size, uint32 findNum, uint32* index);
-
-typedef int (*CMP)(void* a, void* b);
-
+/*read STDIN number to array
+ *return number of input
+ * */
+int readStdinNumToArray(int* a, int size)
+{
+	int i = 0, num;
+	while (scanf("%d", &num) != EOF) {
+		if (i < size)
+			a[i++] = num;
+		else {
+			printf("input exceed max length: %u\n", size);
+			break;
+		}
+	}
+	return i;
+}
+#if 0
 template<typename T>
-void mergeSortedNumber(T * a, int first, int mid, int end, T *tmp, CMP compare)
+void mergeSortedNumber(T * a, int first, int mid, int end, T *tmp)
 {
 	int i = first, j = mid + 1, k = 0;
 	while ((i <= mid ) && (j <= end )) {
-		if (compare(&a[i], &a[j]))
+		if (a[i] <= a[j])
 			tmp[k++] = a[i++];
 		else
 			tmp[k++] = a[j++];
@@ -47,14 +45,15 @@ void mergeSortedNumber(T * a, int first, int mid, int end, T *tmp, CMP compare)
 }
 
 template<typename T>
-void mergesort(T *a, int bottom, int top, T* tmp, CMP compare)
+void mergesort(T *a, int bottom, int top, T* tmp)
 {
 	int mid;
 	if (top > bottom) {
 		mid = (bottom + top) / 2;
-		mergesort(a, bottom, mid, tmp, compare);
-		mergesort(a, mid + 1, top, tmp, compare);
-		mergeSortedNumber(a, bottom, mid, top, tmp, compare);
+		mergesort(a, bottom, mid, tmp);
+		mergesort(a, mid + 1, top, tmp);
+		//mergeSortedNumber(a + bottom, mid - bottom + 1, a + mid + 1, top - mid, tmp);
+		mergeSortedNumber(a, bottom, mid, top, tmp);
 	}
 }
 
@@ -64,7 +63,7 @@ void mergesort(T *a, int bottom, int top, T* tmp, CMP compare)
  *arg3: output sorted array
  * */
 template<typename T>
-void MergeSort(T * a, int size, T* b, CMP compare)
+void MergeSort(T * a, int size, T* b)
 {
 	T * tmp;
 	int i;
@@ -75,6 +74,7 @@ void MergeSort(T * a, int size, T* b, CMP compare)
 	}
 	for (i = 0; i < size; i++)
 		b[i] = a[i];
-	mergesort(b, 0, size - 1, tmp, compare);
+	mergesort(b, 0, size - 1, tmp);
 	free(tmp);
 }
+#endif
