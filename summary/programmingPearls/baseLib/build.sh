@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 TOP=$(pwd)
 SRCDIR=$TOP/src
 LIBDIR=$TOP/lib
@@ -12,3 +13,5 @@ make
 
 cp $HEADER $INCDIR
 cp $LIB $LIBDIR
+rm -rf $LIB
+set +x

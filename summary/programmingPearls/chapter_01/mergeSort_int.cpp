@@ -95,17 +95,25 @@ void mergeSortedNumber(T * a, int first, int mid, int end, \
 {
 	int i = first, j = mid + 1, k = 0;
 	while ((i <= mid ) && (j <= end )) {
-		if (compare((void*)a[i], (void*)a[j]))
-			setValue((void*)tmp[k++], (void*)a[i++]);
+		if (compare(&a[i], &a[j]))
+			setValue(&tmp[k++], &a[i++]);
+			//setValue(tmp[k++], a[i++]);
+			//setValue(tmp + k++, a + i++);
 		else
-			setValue((void*)tmp[k++], (void*)a[j++]);
+			setValue(&tmp[k++], &a[j++]);
+			//setValue(tmp[k++], a[j++]);
+			//setValue(tmp + k++, a + j++);
 	}
 		while (i <= mid)
-			setValue((void*)tmp[k++], (void*)a[i++]);
+			setValue(&tmp[k++], &a[i++]);
+			//setValue(tmp + k++, a + i++);
 		while (j <= end)
-			setValue((void*)tmp[k++], (void*)a[j++]);
+			setValue(&tmp[k++], &a[j++]);
+			//setValue(tmp + k++, a + j++);
 	for (i = 0; i < k; i++) {
-		setValue((void*)a[first + i], (void*)tmp[i]);
+		setValue(&a[first + i], &tmp[i]);
+		//setValue(a[first + i], tmp[i]);
+		//setValue(a + first + i, tmp + i);
 	}
 }
 
@@ -137,7 +145,9 @@ void MergeSort(T * a, int size, T* b, CMP compare, SET setValue)
 		return;
 	}
 	for (i = 0; i < size; i++) {
-		setValue((void*)(*(b + i)), (void*)(*(a + i)));
+		setValue(&b[i], &a[i]);
+		//setValue(*(b + i), *(a + i));
+		//setValue(b + i, a + i);
 	}
 	mergesort(b, 0, size - 1, tmp, compare, setValue);
 	free(tmp);

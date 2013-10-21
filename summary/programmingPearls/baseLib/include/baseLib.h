@@ -21,40 +21,40 @@ int readStdinNumToArray(int* a, int size);
 
 /*binary search using recursion*/
 uint32 BinarySearch(uint32 * a, uint32 size, uint32 findNum, uint32* index);
+#if 1
 
 typedef int (*CMP)(void* a, void* b);
+typedef void (*SET)(void* a, void* b);
 
 template<typename T>
-void mergeSortedNumber(T * a, int first, int mid, int end, T *tmp, CMP compare)
+void mergeSortedNumber(T * a, int first, int mid, int end, \
+		T *tmp, CMP compare, SET setValue)
 {
 	int i = first, j = mid + 1, k = 0;
 	while ((i <= mid ) && (j <= end )) {
 		if (compare(&a[i], &a[j]))
-			tmp[k++] = a[i++];
+			setValue(&tmp[k++], &a[i++]);
 		else
-			tmp[k++] = a[j++];
+			setValue(&tmp[k++], &a[j++]);
 	}
 		while (i <= mid)
-			tmp[k++] = a[i++];
+			setValue(&tmp[k++], &a[i++]);
 		while (j <= end)
-			tmp[k++] = a[j++];
+			setValue(&tmp[k++], &a[j++]);
 	for (i = 0; i < k; i++) {
-		a[first + i] = tmp[i];
-		//pr_debug("%d\n", tmp[i]);
-		
+		setValue(&a[first + i], &tmp[i]);
 	}
-	//pr_debug(">>>>\n");
 }
 
 template<typename T>
-void mergesort(T *a, int bottom, int top, T* tmp, CMP compare)
+void mergesort(T *a, int bottom, int top, T* tmp, CMP compare, SET setValue)
 {
 	int mid;
 	if (top > bottom) {
 		mid = (bottom + top) / 2;
-		mergesort(a, bottom, mid, tmp, compare);
-		mergesort(a, mid + 1, top, tmp, compare);
-		mergeSortedNumber(a, bottom, mid, top, tmp, compare);
+		mergesort(a, bottom, mid, tmp, compare, setValue);
+		mergesort(a, mid + 1, top, tmp, compare, setValue);
+		mergeSortedNumber(a, bottom, mid, top, tmp, compare, setValue);
 	}
 }
 
@@ -64,17 +64,20 @@ void mergesort(T *a, int bottom, int top, T* tmp, CMP compare)
  *arg3: output sorted array
  * */
 template<typename T>
-void MergeSort(T * a, int size, T* b, CMP compare)
+void MergeSort(T * a, int size, T* b, CMP compare, SET setValue)
 {
 	T * tmp;
 	int i;
 	if ( !(tmp = (T*)malloc(size * sizeof(T)))) {
-		//printf("no memory!\n");
 		cout<<"no memory!"<<endl;
 		return;
 	}
-	for (i = 0; i < size; i++)
-		b[i] = a[i];
-	mergesort(b, 0, size - 1, tmp, compare);
+	for (i = 0; i < size; i++) {
+		setValue(&b[i], &a[i]);
+		//setValue(*(b + i), *(a + i));
+		//setValue(b + i, a + i);
+	}
+	mergesort(b, 0, size - 1, tmp, compare, setValue);
 	free(tmp);
 }
+#endif
