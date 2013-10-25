@@ -6,10 +6,10 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include "baseLib.h"
 #define WORDLEN		50
 #define WORDMAX		100000
 
-typedef int (*CMP)(const void* a, const void* b);
 struct node {
 	char word[WORDLEN];
 	char sign[WORDLEN];
@@ -31,6 +31,8 @@ int cmpWord(const void* a, const void* b)
 	}
 }
 #endif
+#if 0
+typedef int (*CMP)(const void* a, const void* b);
 void mergeSortedNumber(void * a, int first, int mid, int end, int width, void *tmp, CMP compare)
 {
 	int i = first, j = mid + 1, k = 0;
@@ -69,6 +71,8 @@ int MergeSort(void* base, int num, int width, CMP cmp)
 	mergesort(base, 0, num - 1, width, tmp, cmp);
 	return 0;
 }
+#endif
+
 int main(int argc, char** argv)
 {
 	//char str[WORDLEN];
