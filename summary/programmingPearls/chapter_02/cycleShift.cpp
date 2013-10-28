@@ -80,6 +80,23 @@ void cycleShiftOrgin(int *a, int input_nums, int shift)
 		k++;
 	}
 }
+
+void reverse(int *a, int start, int end)
+{
+	int len = end - start + 1;
+	int i, t;
+	for (i = 0; i < len / 2; i++) {
+		t = a[start + i];
+		a[start + i] = a[end - i];
+		a[end - i] = t;
+	}
+}
+void cycleShiftReverse(int *a, int input_nums, int shift)
+{
+	reverse(a, 0, shift - 1);
+	reverse(a, shift, input_nums - 1);
+	reverse(a, 0, input_nums - 1);
+}
 int main(int argc, char **argv)
 {
 	int *a = (int*)malloc(sizeof(int) * MAX_LEN);
@@ -95,6 +112,8 @@ int main(int argc, char **argv)
 	if (argv[2]) {
 		if (strcmp(argv[2], "-s") == 0)
 			mode = 1;
+		else if (strcmp(argv[2], "-r") == 0)
+			mode = 2;
 	}
 	printf("shift:%d\n", shift);
 #endif
@@ -109,6 +128,9 @@ int main(int argc, char **argv)
 		break;
 	case 1:
 		cycleShiftReplace(a, input_nums, shift);
+		break;
+	case 2:
+		cycleShiftReverse(a, input_nums, shift);
 		break;
 	}
 	
