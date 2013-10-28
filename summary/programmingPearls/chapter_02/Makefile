@@ -4,8 +4,8 @@ CPPFLAGS:=-I../baseLib/include -L../baseLib/lib -lbaseLib -g
 
 bianWeiCi:bianWeiCi.cpp
 	g++ -o bianWeiCi bianWeiCi.cpp $(CPPFLAGS)
-cycleShift:cycleShift.o
-	gcc  -o cycleShift cycleShift.c $(CPPFLAGS)
+cycleShift:cycleShift.cpp
+	g++  -o cycleShift cycleShift.cpp $(CPPFLAGS)
 
 findNotExisitNumber:findNotExisitNumber.o
 	gcc -o findNotExisitNumber findNotExisitNumber.c $(CPPFLAGS)

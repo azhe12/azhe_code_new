@@ -1,5 +1,7 @@
 /*azhe_liu 2013.10.24
  *Usage: ./bianWeiCi <word.txt
+ * option: -q use qsort
+ * default is mergesort
  *变位词统计
  * */
 #include <iostream>
