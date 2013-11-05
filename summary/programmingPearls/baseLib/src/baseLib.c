@@ -1,10 +1,8 @@
-#include <iostream>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "baseLib.h"
 
-using namespace std;
 /*read STDIN number to array
  *return number of input
  * */
@@ -58,4 +56,12 @@ int MergeSort(void* base, int num, int width, CMP cmp)
 	}
 	mergesort(base, 0, num - 1, width, tmp, cmp);
 	return 0;
+}
+/*generate a random number in [a, b]*/
+int randInt(int a, int b)
+{
+	//return a + (rand() * RAND_MAX + rand()) % (b - a + 1);
+	//srand(time(0));
+	printf("rand: %d\n", a + rand() % (b - a + 1));
+	return a + rand() % (b - a + 1);
 }

@@ -1,4 +1,4 @@
-OBJ=cycleShift findNotExisitNumber bianWeiCi prime
+OBJ=cycleShift findNotExisitNumber bianWeiCi prime hash
 CPPFLAGS:=-I../baseLib/include -L../baseLib/lib -lbaseLib -g
 CFLAGS:=-I../baseLib/include -L../baseLib/lib -lbaseLib -g
 .PHONY: all clean
@@ -11,8 +11,10 @@ cycleShift:cycleShift.cpp
 prime:prime.c
 	gcc -o prime prime.c -lm $(CFLAGS)
 
-findNotExisitNumber:findNotExisitNumber.o
+findNotExisitNumber:findNotExisitNumber.c
 	gcc -o findNotExisitNumber findNotExisitNumber.c $(CFLAGS)
 
+hash:hash.c
+	gcc -o hash hash.c $(CFLAGS)
 clean:
 	rm -rf $(OBJ) *.o

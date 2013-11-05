@@ -1,5 +1,5 @@
 .PHONY:clean
-baseLib:baseLib.cpp
-	gcc -shared -fPIC -o libbaseLib.so baseLib.cpp
+baseLib:baseLib.c
+	gcc -shared -fPIC -o libbaseLib.so baseLib.c
 clean:
 	rm -rf libbaseLib.so
