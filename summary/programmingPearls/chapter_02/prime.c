@@ -35,11 +35,11 @@ int main(int argc, char** argv)
 	
 	range = atoi(argv[1]);
 	if (range < 2) {
-		printf("no prime in [0, %d]!\n", range);
+		/*printf("no prime in [0, %d]!\n", range);*/
 		return -1;
 	}
 
-	for (i = 2; i < range; i++) {
+	for (i = 2; i <= range; i++) {
 		if (isPrime(i)) {
 			printf("%d\n", i);
 			n++;
