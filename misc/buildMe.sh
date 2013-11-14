@@ -41,6 +41,9 @@ setup_env()
 		z4td)
 			export HTCFW_ENABLED=true; export HTC_BUILD_STUBS_FLAG=true; source build/envsetup.sh ; partner_setup z4td Z4TD_Generic_WWE_DEBUG
 			;;
+		csnu)
+			export HTCFW_ENABLED=true; source build/envsetup.sh ; partner_setup htc_csnu CsnU_Generic_WWE_DEBUG ; partner_setup htc_csnu CsnU_CHT_WWE_DEBUG
+			;;
 		google)
 			source build/envsetup.sh ;lunch full-eng
 			;;
@@ -66,6 +69,9 @@ build()
 				;;
 			google)
 				setup_env google;make -j4
+				;;
+			csnu)
+				setup_env csnu;make -j4 PRODUCT-htc_csnu-userdebug
 				;;
 			*)
 				warning "unrecognize project $1"
