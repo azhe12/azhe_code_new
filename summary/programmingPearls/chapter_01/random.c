@@ -13,9 +13,7 @@
 /*generate a random number in [a, b]*/
 unsigned int randInt(unsigned int a, unsigned int b)
 {
-	//return a + (rand() * RAND_MAX + rand()) % (b - a + 1);
-	//srand(time(0));
-	printf("rand: %d\n", a + rand() % (b - a + 1));
+	/*printf("rand: %d\n", a + rand() % (b - a + 1));*/
 	return a + rand() % (b - a + 1);
 }
 /*generate a random array[n] in [0, n-1]*/
