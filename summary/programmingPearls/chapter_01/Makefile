@@ -1,10 +1,10 @@
-OBJ=mergeSort mergeSort_char mergeSort_int
+OBJ=sort random
 CFLAGS:=-I../baseLib/include -L../baseLib/lib -lbaseLib -g
 CPPFLAGS:=-I../baseLib/include -L../baseLib/lib -lbaseLib -g
 .PHONY: all clean
 
-megeSort:mergeSort.c
-	gcc -o mergeSort mergeSort.c $(CFLAGS)
+sort:sort.c
+	gcc -o sort sort.c $(CFLAGS)
 
 random:random.c
 	gcc -o random random.c $(CFLAGS)
