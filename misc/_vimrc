@@ -13,8 +13,15 @@ let g:winManagerWindowLayout='FileExplorer|TagList'
 map <F6> <ESC>:WMToggle<CR>
 "<F7>头文件和c文件之间切换
 nnoremap <silent> <F7> :A<CR>
-"grep <F3>
+"清除高亮显示
+map <F2> :nohl<cr>
+" 按<F3>, grep 字符
 nnoremap <silent> <F3> :Grep<CR>
+"按<F4>, 将tab变为空格
+map <F4> :set expandtab<cr> <ESC>
+"nnoremap <silent> <F4> :set expandtab<cr> <ESC>:%retab!<cr>
+"map <F4> :set expandtab<cr> <ESC>:%retab!<cr>
+
 "关闭Taglist及WM窗体，取消行号 快速按下-q
 nmap -q <ESC>:set nonu<CR>
 
@@ -270,7 +277,10 @@ set noswapfile
 set shiftwidth=4
 set softtabstop=4
 set tabstop=4
+"tab依然是tab
 set noexpandtab
+"tab转为空格
+"set expandtab
 set ts=4
 set ambiwidth=double
 "自动拆分行
@@ -307,9 +317,7 @@ let g:Tex_CompileRule_pdf = 'ps2pdf $*.ps'
 ",cd Switch to current dir
 map <leader>cd :set tags+=tags<cr>:cs add cscope.out<cr>
 "F4 保存并make
-map <F4> :w!<cr>:make<cr>
-"清除高亮显示
-map <F2> :nohl<cr>
+"map <F4> :w!<cr>:make<cr>
 "Super paste 可在不同文件的文本框中复制粘贴
 "插入模式下C-a全局选中
 inoremap <C-a> <esc>ggVG
