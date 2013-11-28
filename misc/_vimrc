@@ -46,6 +46,7 @@ nmap -i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nmap -d :cs find d <C-R>=expand("<cword>")<CR><CR>
 "tam tags相关
 nmap <F8> !tam update 
+filetype plugin indent on
 "lyz 配置结束
 set nocompatible
 ":命令显示历史
@@ -278,9 +279,9 @@ set shiftwidth=4
 set softtabstop=4
 set tabstop=4
 "tab依然是tab
-set noexpandtab
+"set noexpandtab
 "tab转为空格
-"set expandtab
+set expandtab
 set ts=4
 set ambiwidth=double
 "自动拆分行
