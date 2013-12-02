@@ -11,14 +11,12 @@ let g:miniBufExplMapWindowNavVim = 1
 "open taglist window
 let g:winManagerWindowLayout='FileExplorer|TagList'
 map <F6> <ESC>:WMToggle<CR>
-"<F7>头文件和c文件之间切换
-nnoremap <silent> <F7> :A<CR>
 "清除高亮显示
 map <F2> :nohl<cr>
 " 按<F3>, grep 字符
 nnoremap <silent> <F3> :Grep<CR>
 "按<F4>, 将tab变为空格
-map <F4> :set expandtab<cr> <ESC>
+map <F4> :set expandtab<cr><ESC>
 "nnoremap <silent> <F4> :set expandtab<cr> <ESC>:%retab!<cr>
 "map <F4> :set expandtab<cr> <ESC>:%retab!<cr>
 
@@ -44,9 +42,27 @@ nmap -e :cs find e <C-R>=expand("<cword>")<CR><CR>
 nmap -f :cs find f <C-R>=expand("<cfile>")<CR><CR>
 nmap -i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nmap -d :cs find d <C-R>=expand("<cword>")<CR><CR>
-"tam tags相关
-nmap <F8> !tam update 
+"tam相关配置
+nmap <F5> !tam update
+"自动缩进
 filetype plugin indent on
+
+"<F7> 在vi中直接运行python
+function CheckPythonSyntax()
+    let mp = &makeprg
+    let ef = &errorformat
+    let exeFile = expand("%:t")
+    setlocal makeprg=python\ -u
+    set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
+    silent make %
+    copen
+    let &makeprg     = mp
+    let &errorformat = ef
+endfunctio
+map <F7> :call CheckPythonSyntax()<CR>
+if has("gui_running")
+    highlight SpellBad term=underline gui=undercurl guisp=Orange
+endif
 "lyz 配置结束
 set nocompatible
 ":命令显示历史

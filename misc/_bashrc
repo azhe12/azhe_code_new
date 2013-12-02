@@ -6,9 +6,11 @@
 #android build cache
 export USE_CCACHE=1
 export CCACHE_DIR=/home/azhe/work/android/z4_latest_shep/.ccache
+#core dump
+#ulimit -c unlimited
 #vi mode
 set -o vi
-EDITOR=vi
+EDITOR=/usr/bin/vi
 #jdk1.6
 export JAVA_HOME=/home/azhe/other/software/jdk1.6.0_23
 export CLASSPATH=$JAVA_HOME/lib:$JAVA_HOME/jre/lib
@@ -16,11 +18,17 @@ export CLASSPATH=$JAVA_HOME/lib:$JAVA_HOME/jre/lib
 ANDROID_SDK=/home/azhe/Downloads/adt-bundle-linux-x86_64-20130219/sdk
 #PATH
 CROSSTOOL=/home/azhe/work/android/z4_latest_shep/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/
+AZHE_GIT=/home/azhe/share/win7/azhe_code/misc
 #export PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools
-PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools:/home/azhe/bin:$CROSSTOOL
+PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools:/home/azhe/bin:$CROSSTOOL:$AZHE_GIT
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
+#command
+alias makeKernel="make ARCH=arm CROSS_COMPILE=arm-eabi- -j8"
+alias flashKernel="fastboot flash zimage arch/arm/boot/zImage"
+alias adbRb="adb reboot bootloader"
+#azhe customize end
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
