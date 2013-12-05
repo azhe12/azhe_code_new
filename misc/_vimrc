@@ -60,9 +60,9 @@ function CheckPythonSyntax()
     let &errorformat = ef
 endfunctio
 map <F7> :call CheckPythonSyntax()<CR>
-if has("gui_running")
-    highlight SpellBad term=underline gui=undercurl guisp=Orange
-endif
+"if has("gui_running")
+    "highlight SpellBad term=underline gui=undercurl guisp=Orange
+"endif
 "lyz 配置结束
 set nocompatible
 ":命令显示历史
