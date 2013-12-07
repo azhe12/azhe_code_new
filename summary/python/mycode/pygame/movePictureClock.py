@@ -3,7 +3,7 @@
 
 #定义背景图像和鼠标图像名称
 background_image_filename = "panzi.jpg"
-sprite_image_filename = "fish.png"
+sprite_image_filename = "ball.png"
 screen_size = (640, 480)
 
 import pygame
