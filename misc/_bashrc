@@ -2,7 +2,8 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
-#azhe customize
+#>>>>>azhe customize
+
 #android build cache
 export USE_CCACHE=1
 export CCACHE_DIR=/home/azhe/work/android/z4_latest_shep/.ccache
@@ -28,7 +29,9 @@ PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools:/home/azhe/bin:$
 alias makeKernel="make ARCH=arm CROSS_COMPILE=arm-eabi- -j8"
 alias flashKernel="fastboot flash zimage arch/arm/boot/zImage"
 alias adbRb="adb reboot bootloader"
-#azhe customize end
+
+#<<<<<<azhe customize end
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth

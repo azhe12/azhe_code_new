@@ -14,14 +14,21 @@ repo_code()
 {
 	case $1 in
 		z4td|cp5dtg|cp5dug|cp5dtu)
-			repo init -u ssh://10.33.8.6:29419/manifest.git -b htc -m jb-mr0-rel_shep_sprd8825_dsda_sense50.xml; repo sync
+			repo init -u ssh://azhe_liu@10.33.8.6:29419/manifest.git -b htc -m jb-mr0-rel_shep_sprd8825_dsda_sense50.xml; repo sync
+            break
 			;;
 		google)
 			repo init -u https://android.googlesource.com/platform/manifest -b android-4.3_r2.1;repo sync
 			test $? = 0 && git clone https://android.googlesource.com/kernel/goldfish.git
+            break
 			;;
+        m7)
+            repo init -u https://android.googlesource.com/platform/manifest -b kk-rel_shep_qct8064_qca_dsda_sense55_crc.xml;repo sync
+            break
+            ;;
 		*)
 			warning "unrecognize project $1"
+            break
 			;;
 	esac
 }

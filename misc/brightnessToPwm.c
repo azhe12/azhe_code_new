@@ -1,15 +1,15 @@
 #include <stdio.h>
-//#define CP5DTU
-#define CP5DWG
+#define CP5DTU
+/*#define CP5DWG*/
 #ifdef CP5DTU
 #define BRI_SETTING_MIN                 30
 #define BRI_SETTING_DEF                 142
 #define BRI_SETTING_MAX                 255
 #define BRI_SETTING_ONCHG               120
 
-#define AUO_PWM_MIN                     9
-#define AUO_PWM_DEFAULT                 60
-#define AUO_PWM_MAX                     220
+#define AUO_PWM_MIN                     13
+#define AUO_PWM_DEFAULT                 79
+#define AUO_PWM_MAX                     255
 #else
 #define BRI_SETTING_MIN                 30
 #define BRI_SETTING_DEF                 142
