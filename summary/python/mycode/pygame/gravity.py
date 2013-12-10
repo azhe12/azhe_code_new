@@ -13,7 +13,7 @@ PI = 3.1415926
 #比例尺100:1
 SCALE = 50.0
 #碰撞因子, 速度减小比例
-COLLISION_FACTOR = 0.7
+COLLISION_FACTOR = 0.5
 WIND_FACTOR = 0.02
 #精度
 PRECISION = 0.1
@@ -77,16 +77,15 @@ def main():
         ball.v_x *= (1 - WIND_FACTOR)
         ball.v_y += ball.a_y * time_per_frame
         ball.v_y *= (1 - WIND_FACTOR)
-        if math.fabs(ball.v_x) < PRECISION:
-            ball.v_x = 0
-        if math.fabs(ball.v_y) < PRECISION:
-            ball.v_y = 0
 
         #放置背景
         screen.blit(background_image, background_pos)
         #依据比例尺SCALE,计算小球在图中相对位置
         ball_relative_x, ball_relative_y = ball.s_x * SCALE, ball.s_y * SCALE
 
+        #速度小于某一精度则认为静止
+        if math.fabs(ball.v_x) < PRECISION:
+            ball.v_x = 0
         #print '(x,y)= ', ball.s_x, ball.s_y
         #发生碰撞，速度反向且减小
         #碰到右边墙壁,
@@ -106,12 +105,17 @@ def main():
             ball_relative_y = screen_size[1] - ball.rect.height
             ball.s_y = ball_relative_y / SCALE
             ball.v_y = -(ball.v_y * COLLISION_FACTOR)
+            #速度小于某一精度则认为静止
+            if math.fabs(ball.v_y) < PRECISION:
+                ball.v_y = 0
+                ball.a_y = 0
+        #碰到上边墙壁
         if ball_relative_y < 0:
             ball_relative_y = 0
             ball.s_y = ball_relative_y / SCALE
             ball.v_y = -(ball.v_y * COLLISION_FACTOR)
         print '(x,y)= ', ball_relative_x, ball_relative_y,  \
-                'y_heght: ', screen_size[1] - ball_relative_y, \
+                'y_height: ', screen_size[1] - ball_relative_y - ball.rect.height, \
             'ball.w h = ', ball.rect.width, ball.rect.height, \
             'v_x, v_y = ', ball.v_x, ball.v_y, \
             'time: ', time_per_frame
