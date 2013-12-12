@@ -54,7 +54,6 @@ def main():
     #加载 背景和小球图片到变量
     background_image = pygame.image.load(background_image_file).convert()
     background_pos = (0, 0)
-    ball_pos = (0, 0)
     #小球对象
     ball = Ball(v=10)
     
