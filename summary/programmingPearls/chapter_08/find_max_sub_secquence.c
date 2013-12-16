@@ -70,8 +70,13 @@ int main()
 	int * a = malloc(sizeof(int) * MAX_SIZE);
     int start, end, max_sum;
     int input_size;
+    if (a == NULL) {
+        printf("no memory!\n");
+        return -1;
+    }
 	input_size = inputArray(a, MAX_SIZE);
     /*find_max_secquence(a, input_size, &start, &end, &max_sum);*/
     find_max_secquence_scan_algo(a, input_size, &start, &end, &max_sum);
     printf("max sub secquence is: [%d:%d] max_sum: %d\n", start, end, max_sum);
+    free();
 }
