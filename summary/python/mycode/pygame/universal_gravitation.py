@@ -11,13 +11,16 @@ import pygame
 from pygame.locals import *
 import math
 
+NAME = "Universal Gravitation"
+AUTHOR = "azhe"
+VERSION = "0.1"
 background_image_file = 'star.jpg'
 earth_image_file = 'earth.png'
 sun_image_file = 'sun.png'
 screen_size = (640, 480)
 back_color = (255, 255, 255) #white
 #速度, 调节倍数
-V_SCALE = 1e2
+V_SCALE = 150
 #距离, 调节倍数
 S_SCALE = 1.0 / V_SCALE**2
 #日地距离
@@ -130,6 +133,7 @@ class Ball:
 
 def main():
     pygame.init()
+    pygame.display.set_caption(NAME+ " " + VERSION + " " + AUTHOR)
     screen = pygame.display.set_mode(screen_size)
     screen.fill(back_color)
     #加载图片
