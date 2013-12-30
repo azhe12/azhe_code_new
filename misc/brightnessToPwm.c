@@ -1,3 +1,7 @@
+/*azhe_liu 2013.10.1
+ *Usage: cat brightness.txt |./brightnessToPwm
+ *
+ * */
 #include <stdio.h>
 #define CP5DTU
 /*#define CP5DWG*/
