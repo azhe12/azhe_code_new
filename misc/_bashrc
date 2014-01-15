@@ -18,7 +18,7 @@ export CLASSPATH=$JAVA_HOME/lib:$JAVA_HOME/jre/lib
 #android SDK
 ANDROID_SDK=/home/azhe/Downloads/adt-bundle-linux-x86_64-20130219/sdk
 #PATH
-CROSSTOOL=/home/azhe/work/android/z4_latest_shep/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/
+CROSSTOOL=/home/azhe/work/android/shark/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/
 AZHE_GIT=/home/azhe/share/win7/azhe_code/misc
 #export PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools
 PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools:/home/azhe/bin:$CROSSTOOL:$AZHE_GIT
