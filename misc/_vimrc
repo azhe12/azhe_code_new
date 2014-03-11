@@ -14,7 +14,9 @@ map <F6> <ESC>:WMToggle<CR>
 "清除高亮显示
 map <F2> :nohl<cr>
 " 按<F3>, grep 字符
-nnoremap <silent> <F3> :Grep<CR>
+"nnoremap <silent> <F3> :Grep<CR>
+" 按<F3> 查找区分大小写
+map <F3> :set noignorecase<cr>
 "按<F4>, 将tab变为空格
 map <F4> :set expandtab<cr><ESC>
 "nnoremap <silent> <F4> :set expandtab<cr> <ESC>:%retab!<cr>

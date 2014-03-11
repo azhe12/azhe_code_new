@@ -1,0 +1,9 @@
+.PHONY:all
+all:timer_signal gravity pwmToBrightness brightnessToPwm
+
+timer_signal:timer_signal.c
+	gcc -o timer_signal timer_signal.c -lrt -lpthread
+gravity:gravity.c
+	gcc -o gravity gravity.c -lrt -lpthread -lm
+pwmToBrightness:pwmToBrightness.c
+brightnessToPwm:brightnessToPwm.c

@@ -1,3 +1,6 @@
+- azhe is a clever man.
+- do good job
+
 test file
 
 (http://www.azhe/me.com) website
@@ -5,8 +8,5 @@ send a mail to (azhe_liu@htc.com)
 
 use this text file you can verify *textToHtml* tool. adsfasdfasdfaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssssssssssssssssssssssssssssssasdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.
 
-- azhe is a clever man.
-
-- do good job
 
 have a new paragraph.
