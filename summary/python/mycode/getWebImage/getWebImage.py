@@ -5,6 +5,7 @@ from pprint import pprint
 import requests
 import sys
 import random
+import os
 from pyquery import PyQuery as pq
 from time import clock
 from urllib import urlretrieve
@@ -28,25 +29,37 @@ def get_results(url):
 
 
 #获取url的图片并保存在path
-def get_img_links(url, path=None):
+def get_img_links(html):
     #f = open("test.html", 'wb+')
     #f.write(get_results(url))
     #f.close()
-    html = pq(get_results(url))
-    #print html('.article_title')('a').text()
 
+    result = pq(html)
     #在id='article_content'且class='article_content'的节点中查找所有的标签<a>, 这些<a>标签的href属性内容生成一个列表
-    links = [a.attrib['src'] for a in html('#article_content.article_content')('img')]
+    #此处仅仅for CNDN blog
+    links = [a.attrib['src'] for a in result('#article_content.article_content')('img')]
     pprint(links)
     return links
 
+def get_url_title(html):
+    result = pq(html)
+    return result('.article_title')('a').text()
+
+
+
 def save_picture(url):
     global img_cnt
-    links = get_img_links(url)
+    html = get_results(url)
+    links = get_img_links(html)
+    title = get_url_title(html)
+
+    save_img_dir = os.getcwd() + '/' + title #图片保存目录
+    print save_img_dir
+    os.mkdir(save_img_dir)
     for link in links:
         img_name = str(img_cnt) + '.png'
         img_cnt = img_cnt + 1
-        urlretrieve(link, './'+img_name)
+        urlretrieve(link, save_img_dir + '/' + img_name)
 
 def main(url):
     save_picture(url)
