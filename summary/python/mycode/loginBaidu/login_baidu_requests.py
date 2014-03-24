@@ -20,6 +20,10 @@ import urllib
 import cookielib
 import re
 import argparse
+import requests
+import requests_cache
+import json
+from cookielib import LWPCookieJar
 
 def show_cookie(CookieJar):
     for i, c in enumerate(CookieJar):
@@ -31,6 +35,10 @@ def print_delimiter():
 url_baidu = 'http://www.baidu.com'
 url_getApi = 'https://passport.baidu.com/v2/api/?getapi&tpl=mn&apiver=v3&tt=1395110168559&class=login&logintype=dialogLogin&callback=bd__cbs__1tr0a2'
 url_login = 'https://passport.baidu.com/v2/api/?login'
+CACHE_FILE = 'cacheLoginBaidu'
+
+user_agent = 'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0)'
+header = {'User-Agent':user_agent}
 
 def get_parser():
     parser = argparse.ArgumentParser(description='emulate login www.baidu.com')
@@ -51,30 +59,44 @@ def login_baidu():
     username = args['user'] #登录名和密码
     passwd = args['password']
 
-    cj = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    requests_cache.install_cache(CACHE_FILE)
+
+    s = requests.Session()
     
-    urllib2.install_opener(opener)
-    
-    #step 1: 获取cookie
+    #step 1: GET 获取cookie
     print_delimiter()
     print 'Step 1: get cookie from %s' % url_baidu
-    res_baidu = urllib2.urlopen(url_baidu)
-    show_cookie(cj)
+
+    '''
+    req_baidu = requests.get(url_baidu, headers=header)
+    #req_baidu = requests.get(url_baidu)
+    req_baidu_cookies = req_baidu.cookies
+    req_baidu_cooike_dict = requests.utils.dict_from_cookiejar(req_baidu_cookies)
+
+    print 'cookie values:', req_baidu_cookies.values
+    print 'cookie keys:', req_baidu_cookies.keys
+    print 'cookie dict: ', req_baidu_cooike_dict
+    #s.get(url_baidu, headers=header)
+    '''
+    r = s.get(url_baidu, headers=header)
+    print requests.utils.dict_from_cookiejar(r.cookies)
+
     
-    
-    #step 2: 获取token, 如果没有step1, 那么token = the fisrt two args should be string type:0,1!
+    #step 2: GET 获取token
     print_delimiter()
     print 'Step 2: get token from %s' % url_getApi
+    '''
+    req_getApi = requests.get(url_getApi, headers=header, cookies=req_baidu_cooike_dict)
+    #req_getApi = s.get(url_getApi, headers=header)
+
+    req_text = req_getApi.text
     
-    res_getApi = urllib2.urlopen(url_getApi)
-    
-    res_str = res_getApi.read()
-    print 'responce body = \n', res_str
-    
+    '''
+    res_text = s.get(url_getApi, headers=header, cookies=s.cookies).text
+    print 'responce body = \n', res_text
     pattern = '"token" : "(.*)", "cookie"'
     #pattern = 'token'
-    match = re.search(pattern, res_str)
+    match = re.search(pattern, res_text)
     token = match.group(1)
     print 'token = %s' % token
     print_delimiter()
@@ -109,18 +131,16 @@ def login_baidu():
             'callback':'parent.bd__pcbs__jz9gqq'
             }
     
-    post_data = urllib.urlencode(post_dict) #将字典编码为http格式数据如, username=xxx&password=xxxx&tpl=mn&mem_pass=on& 
-    print 'post_data = ', post_data
+    #post_data = urllib.urlencode(post_dict) #将字典编码为http格式数据如, username=liuyuanzhe123%40126.com&password=lyz13.BAIDU&tpl=mn&mem_pass=on& 
+    #print 'post_data = ', post_data
     
-    user_agent = 'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0)'
     
-    header = {'User-Agent':user_agent}
+    #req = urllib2.Request(url_login, post_data, header) #使用urllib2发送POST请求
+    #response = urllib2.urlopen(req)
+    req_login = requests.post(url_login, params=json.dumps(post_dict), headers=header) #将post_dict转为json字符串, 然后POST
+    response_login = req_login.text
+    print 'response:', response_login
     
-    req = urllib2.Request(url_login, post_data, header) #使用urllib2发送POST请求
-    response = urllib2.urlopen(req)
-    
-    #print response.read()
-    show_cookie(cj)
 
 if __name__ == '__main__':
     login_baidu()
