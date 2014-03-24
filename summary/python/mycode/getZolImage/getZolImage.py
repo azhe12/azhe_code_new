@@ -157,6 +157,13 @@ if __name__ == '__main__':
     theme_link = 'http://sj.zol.com.cn/bizhi/detail_5839_62457.html'
     start = clock()
     get_zol_image()
-    print 'Elapse: %d s' % ((clock() - start)/1000000)
+    #i = 1
+    #j = 1
+    #while i < 10000000:
+        #while j < 10:
+            #j += 1
+        #j = 1
+        #i += 1
+    print 'Elapse: %d s' % (clock() - start)
 
     #get_zol_image()
