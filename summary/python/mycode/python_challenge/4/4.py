@@ -1,13 +1,18 @@
 #!/usr/bin/env python
+#!encoding=utf-8
 '''
-url: http://www.pythonchallenge.com/pc/def/linkedlist.php
-1.  点击图片, 发现第一个nothing num = '12345'
-2.  不断的urlopen， 去找到下一个nothing num. 直到停止. 停止时(n=85, nothing=16044)
-3.  根据网页提示，下个nothing为 16044/2=8022, 继续从第一步骤开始, 第一个nothing num='8022'
+URL: http://www.pythonchallenge.com/pc/def/linkedlist.php
+
+Description:
+    1.  点击图片, 发现第一个nothing num = '12345'
+    2.  不断的urlopen， 去找到下一个nothing num. 直到停止. 停止时(n=85, nothing=16044)
+    3.  根据网页提示，下个nothing为 16044/2=8022, 继续从第一步骤开始, 第一个nothing num='8022'
+
+answer:
+    peak.html
 '''
 import re
 import urllib2
-from bs4 import BeautifulSoup
 
 TOP_URL = 'http://www.pythonchallenge.com/pc/def/linkedlist.php'
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}

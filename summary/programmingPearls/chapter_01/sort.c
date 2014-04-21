@@ -106,6 +106,7 @@ int QuickSort(int* a, int start, int end, int pivot)
 		printf("+++++++\n");
 #endif
 		}
+        printf("i=%d, j=%d\n", i, j);
 		if (a[i] == x) /*new pivot*/
 			p = i;
 		else

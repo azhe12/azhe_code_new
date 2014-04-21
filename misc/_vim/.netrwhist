@@ -1,5 +1,8 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_cnt =6
 let g:netrw_dirhist_1='/home/azhe/work/howdoi/build/bdist.linux-x86_64'
 let g:netrw_dirhist_2='/home/azhe/work/howdoi/build/lib.linux-x86_64-2.7'
 let g:netrw_dirhist_3='/home/azhe/work/howdoi/build/lib.linux-x86_64-2.7/howdoi'
+let g:netrw_dirhist_4='/home/azhe/work/howdoi/howdoi'
+let g:netrw_dirhist_5='/home/azhe/work/jekyll_demo2/.git/branches'
+let g:netrw_dirhist_6='/home/azhe/work/scrapy_demo/scrapy_demo/spiders'
