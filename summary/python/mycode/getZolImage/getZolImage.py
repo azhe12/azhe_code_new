@@ -68,10 +68,12 @@ def get_img_links(theme_link):
     soup = BeautifulSoup(res_text)
 
     theme_title = soup('h1')[0].a.string        #标题
-    img_download_dir = os.getcwd() + '/' + theme_title
+    img_download_dir = os.getcwd() + '/images/' + theme_title
     try:
-        os.mkdir(img_download_dir.encode())          #图片下载目录
+        #os.mkdir(img_download_dir.encode())          #图片下载目录
+        os.makedirs(img_download_dir)          #图片下载目录
     except:
+        print "can't mkdir " + img_download_dir
         pass
 
     max_links_num_str = soup.find(attrs={'id':'img1'}).i.contents[1].string     #如u'/16'之类的，最大图片张数

@@ -67,7 +67,7 @@ class Download_theme_img(threading.Thread):
         soup = BeautifulSoup(res_text)
     
         theme_title = soup('h1')[0].a.string        #标题
-        img_download_dir = os.getcwd() + '/' + theme_title
+        img_download_dir = os.getcwd() + '/images/' + theme_title
         try:
             os.mkdir(img_download_dir.encode())          #图片下载目录
         except:
@@ -156,10 +156,13 @@ def get_zol_image():
     for i,theme_link in enumerate(get_theme_links()):
         t = Download_theme_img(i, theme_link)   #多线程下载img
         download_threads.append(t)
+        t.setDaemon(True)
         t.start()
 
     for download_thread in download_threads:
         download_thread.join()
+    #while True:
+        #pass
 
     print 'Done! Elapse: %d s' % (time.time()-start)
     
