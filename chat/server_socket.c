@@ -51,7 +51,7 @@ int main(void)
 	bzero(&my_addr, sizeof(struct sockaddr_in));
 	my_addr.sin_family=AF_INET;	/*地址族*/
 	my_addr.sin_port=htons(SERVPORT);	/*端口号为4444*/
-	inet_aton("127.0.0.1", &my_addr.sin_addr);
+	inet_aton("127.0.0.2", &my_addr.sin_addr);
 
 	if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1) { 			/*错误检测*/
 		perror("bind");
@@ -73,7 +73,9 @@ int main(void)
 		perror("accept");
 		exit(1);
 	}
+    printf("client fd: %d\n", client_fd);
 	pr_debug("accept success %d\n", sockfd);
+    printf("client addr:");
 
 	fcntl(client_fd, F_SETFD, O_NONBLOCK);/* 服务器设为非阻塞*/
 	recvbytes=recv(client_fd, buff, MAXDATASIZE, 0);

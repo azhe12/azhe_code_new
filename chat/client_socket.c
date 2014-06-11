@@ -9,7 +9,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
-#define SERVPORT 4444		/*服务器监听端口号*/
+/*#define SERVPORT 4444		[>服务器监听端口号<]*/
+/*#define SERVPORT 2001 //[>服务器监听端口号<]*/
+#define SERVPORT 2000 //[>服务器监听端口号<]
 #define MAXDATASIZE 256 	/*最大同时连接请求数*/
 #define STDIN 0			 /*标准输入文件描述符*/
 
@@ -51,8 +53,9 @@ int main(void)
 	bzero(&serv_addr, sizeof(struct sockaddr_in));
 	serv_addr.sin_family=AF_INET;
 	serv_addr.sin_port=htons(SERVPORT);
-	inet_aton("127.0.0.1", &serv_addr.sin_addr);
-	/*serv_addr.sin_addr.s_addr=inet_addr("192.168.0.101");*/
+    inet_aton("127.0.0.1", &serv_addr.sin_addr);
+    /*inet_aton("127.0.0.2", &serv_addr.sin_addr);*/
+    /*serv_addr.sin_addr.s_addr=inet_addr("192.168.0.101");*/
 
 	pr_debug("connect %d\n", sockfd);
 	if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(struct sockaddr)) == -1) 
@@ -61,7 +64,7 @@ int main(void)
 		perror("connect");
 		exit(1);
 	}
-	pr_debug("connect success %d\n", sockfd);
+	pr_debug("connect %s:%d success %d\n", sockfd, serv_addr.sin_addr.s_addr, SERVPORT);
 
 	fcntl(sockfd, F_SETFD, O_NONBLOCK);
 	
