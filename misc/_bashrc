@@ -27,6 +27,11 @@ PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$ANDROID_SDK/tools:/home/azhe/bin:$
 [ -z "$PS1" ] && return
 
 #command
+function makeKernelConfig()
+{
+    make ARCH=arm CROSS_COMPILE=arm-eabi- $1
+}
+
 alias makeKernel="make ARCH=arm CROSS_COMPILE=arm-eabi- -j8"
 alias flashKernel="fastboot flash zimage arch/arm/boot/zImage"
 alias adbRb="adb reboot bootloader"

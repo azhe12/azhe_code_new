@@ -1,8 +1,0 @@
-2.6.38.4内核中struct device结构体没有bus_id成员。
-如需使用device->bus_id则改为
-dev_name(),dev_set_name()
-static inline const char *dev_name(const struct device *dev)
-extern int dev_set_name(struct device *dev, const char *name, ...)
-                        __attribute__((format(printf, 2, 3)));
-
-
