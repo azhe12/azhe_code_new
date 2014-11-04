@@ -1,7 +1,10 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_cnt =8
 let g:netrw_dirhist_1='/home/azhe/work/muduo/muduo/net'
 let g:netrw_dirhist_2='/home/azhe/work/muduo/muduo/net/http'
 let g:netrw_dirhist_3='/home/azhe/share/win7/python_tool'
 let g:netrw_dirhist_4='/home/azhe/share/win7/python_tool/getZolImage'
 let g:netrw_dirhist_5='/home/azhe/work/muduo/examples/asio/tutorial/timer2'
+let g:netrw_dirhist_6='/home/azhe/work/phptest'
+let g:netrw_dirhist_7='/home/azhe/work/phptest/2'
+let g:netrw_dirhist_8='/home/azhe/work/phptest'

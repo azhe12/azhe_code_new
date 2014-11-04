@@ -44,6 +44,9 @@ nmap -e :cs find e <C-R>=expand("<cword>")<CR><CR>
 nmap -f :cs find f <C-R>=expand("<cfile>")<CR><CR>
 nmap -i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nmap -d :cs find d <C-R>=expand("<cword>")<CR><CR>
+
+"php语法检查
+:autocmd FileType php noremap <C-M> :!/usr/bin/php -l %<CR>
 "tam相关配置
 nmap <F5> !tam update
 "自动缩进
@@ -118,6 +121,7 @@ elseif has("unix")
 endif
 
 "编码设定Encoding
+set encoding=gb2312
 set fileencoding=utf-8
 set fileencodings=utf-8,ucs-bom,gbk,big5,gb2312,gb13080,cp936
 
