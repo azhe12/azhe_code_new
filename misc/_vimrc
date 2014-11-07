@@ -68,6 +68,16 @@ map <F7> :call CheckPythonSyntax()<CR>
 "if has("gui_running")
     "highlight SpellBad term=underline gui=undercurl guisp=Orange
 "endif
+"
+
+"增加php自动补全
+au FileType php call PHPFuncList()
+function PHPFuncList()
+    set dictionary-=$HOME/.vim/php_funclist.txt
+    set dictionary+=$HOME/.vim/php_funclist.txt
+    set complete-=k complete+=k
+endfunction
+
 "lyz 配置结束
 set nocompatible
 ":命令显示历史
