@@ -78,6 +78,8 @@ function PHPFuncList()
     set complete-=k complete+=k
 endfunction
 
+let g:slimv_swank_cmd = '! xterm -e clisp -i /home/azhe/.vim/slime/start-swank.lisp &'
+
 "lyz 配置结束
 set nocompatible
 ":命令显示历史
@@ -131,7 +133,7 @@ elseif has("unix")
 endif
 
 "编码设定Encoding
-set encoding=gb2312
+set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,ucs-bom,gbk,big5,gb2312,gb13080,cp936
 
