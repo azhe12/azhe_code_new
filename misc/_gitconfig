@@ -1,0 +1,12 @@
+[user]
+	name = azhe
+	email = liuyuanzhe123@126.com
+[alias]
+    l = log
+    cm = commit
+    st = status
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+	interactive = auto
