@@ -14,7 +14,9 @@ map <F6> <ESC>:WMToggle<CR>
 "清除高亮显示
 map <F2> :nohl<cr>
 " 按<F3>, grep 字符
-nnoremap <silent> <F3> :Grep<CR>
+"nnoremap <silent> <F3> :Grep<CR>
+" 按<F3> 查找区分大小写
+map <F3> :set noignorecase<cr>
 "按<F4>, 将tab变为空格
 map <F4> :set expandtab<cr><ESC>
 "nnoremap <silent> <F4> :set expandtab<cr> <ESC>:%retab!<cr>
@@ -42,6 +44,9 @@ nmap -e :cs find e <C-R>=expand("<cword>")<CR><CR>
 nmap -f :cs find f <C-R>=expand("<cfile>")<CR><CR>
 nmap -i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nmap -d :cs find d <C-R>=expand("<cword>")<CR><CR>
+
+"php语法检查
+:autocmd FileType php noremap <C-M> :!/usr/bin/php -l %<CR>
 "tam相关配置
 nmap <F5> !tam update
 "自动缩进
@@ -63,6 +68,18 @@ map <F7> :call CheckPythonSyntax()<CR>
 "if has("gui_running")
     "highlight SpellBad term=underline gui=undercurl guisp=Orange
 "endif
+"
+
+"增加php自动补全
+au FileType php call PHPFuncList()
+function PHPFuncList()
+    set dictionary-=$HOME/.vim/php_funclist.txt
+    set dictionary+=$HOME/.vim/php_funclist.txt
+    set complete-=k complete+=k
+endfunction
+
+let g:slimv_swank_cmd = '! xterm -e clisp -i /home/azhe/.vim/slime/start-swank.lisp &'
+
 "lyz 配置结束
 set nocompatible
 ":命令显示历史
@@ -116,6 +133,7 @@ elseif has("unix")
 endif
 
 "编码设定Encoding
+set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,ucs-bom,gbk,big5,gb2312,gb13080,cp936
 

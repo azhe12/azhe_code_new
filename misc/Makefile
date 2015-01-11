@@ -1,6 +1,9 @@
-ALL:timer_signal gravity
+.PHONY:all clean
+OBJ=pwmToBrightness brightnessToPwm
 
-timer_signal:timer_signal.c
-	gcc -o timer_signal timer_signal.c -lrt -lpthread
-gravity:gravity.c
-	gcc -o gravity gravity.c -lrt -lpthread -lm
+all:$(OBJ)
+pwmToBrightness:pwmToBrightness.c
+brightnessToPwm:brightnessToPwm.c
+
+clean:
+	rm -rf *.o $(OBJ)
