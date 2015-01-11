@@ -1,12 +1,22 @@
+[color]
+	ui = auto
+[core]
+	edit = vim
+	editor = vim
+	excludesfile = /home/azhe/.gitignore
+[merge]
+	tool = meld
 [user]
-	name = azhe
+	name = azhe_liu
 	email = liuyuanzhe123@126.com
 [alias]
-    l = log
-    cm = commit
-    st = status
-[color]
-	status = auto
-	diff = auto
-	branch = auto
-	interactive = auto
+	st = status
+	co = checkout
+	ci = commit
+	br = branch
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	rh = reset --hard
+	rh1 = reset --hard HEAD^
+	l = log
+	ba = branch -a
+	cm = commit
