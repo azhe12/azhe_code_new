@@ -134,8 +134,8 @@ elseif has("unix")
 endif
 
 "编码设定Encoding
-set encoding=utf-8
-set fileencoding=utf-8
+set encoding=gb2312
+set fileencoding=gb2312
 set fileencodings=utf-8,ucs-bom,gbk,big5,gb2312,gb13080,cp936
 
 "set langmenu=zh_CN.UTF-8
