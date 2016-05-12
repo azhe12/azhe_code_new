@@ -2,6 +2,8 @@
 " => General
 "==============================================================================
 "lyz 配置
+"括号匹配
+set showmatch
 set pastetoggle=<F9>
 let Tlist_Show_One_File=1
 let Tlist_Exit_OnlyWindow=1
@@ -17,7 +19,7 @@ map <F2> :nohl<cr>
 "nnoremap <silent> <F3> :Grep<CR>
 " 按<F3> 查找区分大小写
 map <F3> :set noignorecase<cr>
-"按<F4>, 将tab变为空格
+""按<F4>, 将tab变为空格
 map <F4> :set expandtab<cr><ESC>
 "nnoremap <silent> <F4> :set expandtab<cr> <ESC>:%retab!<cr>
 "map <F4> :set expandtab<cr> <ESC>:%retab!<cr>
@@ -41,12 +43,10 @@ nmap -g :cs find g <C-R>=expand("<cword>")<CR><CR>
 nmap -c :cs find c <C-R>=expand("<cword>")<CR><CR>
 nmap -t :cs find t <C-R>=expand("<cword>")<CR><CR>
 nmap -e :cs find e <C-R>=expand("<cword>")<CR><CR>
-nmap -f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+"nmap -f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+nmap -f :cs find f 
 nmap -i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nmap -d :cs find d <C-R>=expand("<cword>")<CR><CR>
-
-"php语法检查
-:autocmd FileType php noremap <C-M> :!/usr/bin/php -l %<CR>
 "tam相关配置
 nmap <F5> !tam update
 "自动缩进
@@ -68,18 +68,13 @@ map <F7> :call CheckPythonSyntax()<CR>
 "if has("gui_running")
     "highlight SpellBad term=underline gui=undercurl guisp=Orange
 "endif
-"
 
-"增加php自动补全
 au FileType php call PHPFuncList()
 function PHPFuncList()
-    set dictionary-=$HOME/.vim/php_funclist.txt
-    set dictionary+=$HOME/.vim/php_funclist.txt
+    set dictionary-=~/.vim/php_funclist.txt
+    set dictionary+=~/.vim/php_funclist.txt
     set complete-=k complete+=k
 endfunction
-
-"支持common lisp插件slime
-let g:slimv_swank_cmd = '! xterm -e clisp -i /home/azhe/.vim/slime/start-swank.lisp &'
 
 "lyz 配置结束
 set nocompatible
@@ -92,15 +87,15 @@ set history=500
 set go-=T
 
 "normal模式下取消输入法
-autocmd! InsertLeave *	set imdisable
-autocmd! InsertEnter *	set noimdisable
+"autocmd! InsertLeave *	set imdisable
+"autocmd! InsertEnter *	set noimdisable
 
 "开启插件和缩进
 filetype plugin indent on
 
 "set autoread
-"set mouse=a
-set mousehide
+set mouse=
+"set mousehide
 
 "设置无响铃
 set novisualbell
@@ -134,8 +129,9 @@ elseif has("unix")
 endif
 
 "编码设定Encoding
+
 set encoding=gb2312
-set fileencoding=gb2312
+set fileencoding=utf-8
 set fileencodings=utf-8,ucs-bom,gbk,big5,gb2312,gb13080,cp936
 
 "set langmenu=zh_CN.UTF-8
@@ -183,15 +179,18 @@ if has("gui_running")
 endif
 
 "主题颜色设定
-"colorscheme torte
-"colorscheme molokai
-"colorscheme lettuce
-"colorscheme navajo-night
+colorscheme torte "好看
+"colorscheme molokai "难看
+"colorscheme lettuce "没颜色，难看
+"colorscheme navajo-night "暴丑
+"colorscheme guardian "没颜色，难看
+"set t_Co=256  "别打开这个开关
+
 
 autocmd BufEnter * :syntax sync fromstart
 
 "高亮当前行 Highlight current
-set cursorline
+"set cursorline
 
 "Display tab as >----，and trail spaces of the line as -
 "set listchars=tab:>-,trail:-
@@ -251,7 +250,7 @@ map <leader>tc :tabclose<cr>
 "译注:移动当前标签,使用方法为
 map <leader>tm :tabmove 
 "让 gvim 支持 Alt+n 来切换标签页
-autocmd VimEnter * call BufPos_Initialize()
+"autocmd VimEnter * call BufPos_Initialize()
 "==============================================================================
 " for lookupfile.vim
 "==============================================================================
@@ -444,7 +443,7 @@ let g:C_FormatYear			  = 'year %Y'
 "==============================================================================
 let g:vimwiki_use_mouse = 1
 "设置vimwiki目录
-let g:vimwiki_list = [{'path': '~/vimwiki/wiki/', 'path_html': '~/vimwiki/html/'}]
+""let g:vimwiki_list = [{'path': '~/vimwiki/wiki/', 'path_html': '~/vimwiki/html/'}]
 "au filetype vimwiki map <leader>tt <Plug>VimwikiToggleListItem 
 "打开当前链接
 au filetype vimwiki map <Leader>wf <Plug>VimwikiFollowLink
@@ -465,41 +464,17 @@ au filetype vimwiki map <leader>ta :wa<cr>:VimwikiAll2HTML<cr>:!google-chrome %:
 "==============================================================================
 "for ctags
 "==============================================================================
-"map <F12> :call Do_CsTag()<cr>
-function! Do_CsTag()
+map <F12> :call Do_CsTag_TagMe()<cr>
+function! Do_CsTag_TagMe()
 	let dir = getcwd()
 
-	"先删除已有的tags和cscope文件，如果存在且无法删除，则报错。
-	if ( DeleteFile(dir, "tags") )
-		return
-	endif
-	if ( DeleteFile(dir, "cscope.files") )
-		return
-	endif
-	if ( DeleteFile(dir, "cscope.out") )
-		return
-	endif
+    silent! execute "!tagMe.py"
+	execute "cs add cscope.out"
 
-	if(executable('ctags'))
-		"silent! execute "!g++ -E % -o tmpcpp -I../eg"
-		silent! execute "!ctags -R --c++-kinds=+p --fields=+ialS --extra=+q --language-force=C++ ."
-		"silent! execute "!unlink tmpcpp"
-	endif
-	if(executable('cscope') && has("cscope") )
-		if(has("win32"))
-			silent! execute "!dir /s/b *.c,*.cpp,*.h,*.java,*.cs >> cscope.files"
-		else
-			silent! execute "!find . -iname '*.[ch]' -o -name '*.cpp' > cscope.files"
-		endif
-		silent! execute "!cscope -b"
-		execute "normal :"
-		if filereadable("cscope.out")
-			execute "cs add cscope.out"
-		endif
-	endif
 	" 刷新屏幕
 	execute "redr!"
 endfunction
+
 
 function! DeleteFile(dir, filename)
 	if filereadable(a:filename)
@@ -519,25 +494,6 @@ function! DeleteFile(dir, filename)
 endfunction
 
 set tags=tags,../tags
-
-function! Add_tags()
-"Add tags file
-if has("win32")
-	set tags+=
-elseif has("unix")
-	set tags+=/usr/include/tags,/usr/src/tags
-endif
-"Add cscope file
-	if has("cscope") && has("unix")
-		if filereadable("/usr/src/cscope.out")
-			cs add /usr/src/cscope.out /usr/src/
-		endif
-
-		if filereadable("/usr/include/cscope.out")
-			cs add /usr/include/cscope.out /usr/include/
-		endif
-	endif
-endfunction
 
 " cscope 绑定
 if has("cscope")
@@ -559,24 +515,24 @@ if has("cscope")
 	nmap <leader>sd :cs find d <C-R>=expand("<cword>")<CR><CR>
 endif
 "用A-Num来切换标签
-function! BufPos_ActivateBuffer(num)
-	let l:count = 1
-	for i in range(1, bufnr("$"))
-		if buflisted(i) && getbufvar(i, "&modifiable")
-			if l:count == a:num
-				exe "buffer " . i
-				return
-			"endif
-			let l:count = l:count + 1
-		endif
-	endfor
-	echo "No buffer!"
-endfunction
-function! BufPos_Initialize()
-	for i in range(0, 9)
-		exe "map <M-" . i . "> " . i . "gt" 
-	endfor
-endfunction
+"function! BufPos_ActivateBuffer(num)
+"	let l:count = 1
+"	for i in range(1, bufnr("$"))
+"		if buflisted(i) && getbufvar(i, "&modifiable")
+"			if l:count == a:num
+"				exe "buffer " . i
+"				return
+"			"endif
+"			let l:count = l:count + 1
+"		endif
+"	endfor
+"	echo "No buffer!"
+"endfunction
+"function! BufPos_Initialize()
+"	for i in range(0, 9)
+"		exe "map <M-" . i . "> " . i . "gt" 
+"	endfor
+"endfunction
 
 "进入文件所在目录然后
 cd %:p:h

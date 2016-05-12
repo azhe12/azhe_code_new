@@ -30,3 +30,7 @@ hi cBinaryOperator          guifg=#3EFFE2
 hi cBinaryOperatorError     guifg=#3EFFE2
 hi cLogicalOperator         guifg=#3EFFE2
 hi cLogicalOperatorError    guifg=#3EFFE2
+"highlight Functions
+syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
+syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
+hi cFunctions gui=NONE cterm=bold  ctermfg=blue
